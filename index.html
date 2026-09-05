@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>灯火会宁 · 长征胜利90周年剧本杀</title>
+<style>
+:root{
+  --ink:#0b1220; --ink2:#101a2e; --ink3:#16223a;
+  --paper:#e9dcc3; --paper-dim:#c9b998;
+  --lamp:#f0b84e; --lamp-hi:#ffd98a;
+  --red:#a83232; --red-hi:#c9503f;
+  --line:rgba(240,184,78,.35);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:radial-gradient(120% 90% at 50% 0%, #16223a 0%, var(--ink) 60%, #060a14 100%);
+  color:var(--paper);
+  font-family:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  min-height:100vh; line-height:1.75;
+}
+#snow{position:fixed; inset:0; z-index:60; pointer-events:none;}
+#app{max-width:620px; margin:0 auto; padding:18px 16px 90px; position:relative; z-index:2;}
+.screen{animation:fadein .6s ease both;}
+@keyframes fadein{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+h1,h2,h3{font-weight:700; letter-spacing:.12em;}
+.center{text-align:center;}
+.dim{color:var(--paper-dim);}
+.red{color:var(--red-hi);}
+.lampc{color:var(--lamp);}
+.small{font-size:.85em;}
+.hr{border:none; border-top:1px solid var(--line); margin:22px 0;}
+
+/* 标题页 */
+.title-wrap{text-align:center; padding:52px 0 30px; position:relative;}
+.game-title{
+  font-size:3.2em; margin:.2em 0; letter-spacing:.28em; text-indent:.28em;
+  color:var(--lamp-hi);
+  text-shadow:0 0 18px rgba(240,184,78,.55), 0 0 60px rgba(240,184,78,.25);
+  animation:lampglow 3.2s ease-in-out infinite;
+}
+@keyframes lampglow{
+  0%,100%{text-shadow:0 0 14px rgba(240,184,78,.45),0 0 46px rgba(240,184,78,.18);}
+  50%{text-shadow:0 0 24px rgba(255,217,138,.75),0 0 80px rgba(240,184,78,.35);}
+}
+.subtitle{color:var(--paper-dim); letter-spacing:.3em; font-size:.95em;}
+.lamp-flame{
+  width:14px; height:22px; margin:26px auto 0; border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:radial-gradient(circle at 50% 70%, #fff3c4 0%, var(--lamp) 45%, #d07a1e 80%, transparent 100%);
+  filter:blur(.4px); transform-origin:50% 100%;
+  animation:flick .5s ease-in-out infinite alternate;
+  box-shadow:0 0 30px 12px rgba(240,184,78,.35);
+}
+@keyframes flick{from{transform:scaleY(1) scaleX(1);} to{transform:scaleY(1.15) scaleX(.92) translateY(-1px);}}
+
+/* 按钮 */
+.btn{
+  display:block; width:100%; margin:12px 0; padding:13px 18px;
+  background:linear-gradient(180deg, rgba(240,184,78,.10), rgba(240,184,78,.04));
+  border:1px solid var(--line); border-radius:8px; color:var(--lamp-hi);
+  font-family:inherit; font-size:1.02em; letter-spacing:.15em; cursor:pointer;
+  transition:all .2s;
+}
+.btn:hover:not(:disabled){background:rgba(240,184,78,.18); border-color:var(--lamp);}
+.btn:disabled{opacity:.35; cursor:not-allowed;}
+.btn.red-btn{border-color:rgba(200,80,63,.6); color:#e8a79d;}
+.btn.ghost{background:transparent;}
+.opt-btn{
+  display:block; width:100%; margin:8px 0; padding:11px 14px; text-align:left;
+  background:rgba(255,255,255,.04); border:1px solid rgba(233,220,195,.18);
+  border-radius:8px; color:var(--paper); font-family:inherit; font-size:.98em; cursor:pointer;
+}
+.opt-btn:hover{border-color:var(--lamp); background:rgba(240,184,78,.10);}
+.opt-btn.sel{border-color:var(--lamp); background:rgba(240,184,78,.16); box-shadow:0 0 0 1px var(--lamp) inset;}
+
+/* 旁白 / 打字机 */
+.narr{
+  background:rgba(11,18,32,.72); border:1px solid rgba(233,220,195,.14);
+  border-left:3px solid var(--lamp); border-radius:6px;
+  padding:16px 18px; margin:14px 0; min-height:60px;
+}
+.narr p{margin:.4em 0;}
+.narr p:first-child{margin-top:0;} .narr p:last-child{margin-bottom:0;}
+.cursor::after{content:"▍"; color:var(--lamp); animation:blink .8s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+.dm-tag{display:inline-block; font-size:.75em; letter-spacing:.25em; color:var(--ink);
+  background:var(--lamp); border-radius:3px; padding:1px 8px; margin-bottom:8px;}
+.skiptip{text-align:center; color:var(--paper-dim); font-size:.8em; margin-top:6px;}
+
+/* 角色卡 */
+.char-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0;}
+.char-card{
+  border:1px solid rgba(233,220,195,.2); border-radius:10px; padding:14px 12px;
+  background:linear-gradient(160deg, rgba(22,34,58,.9), rgba(11,18,32,.9));
+  cursor:pointer; transition:all .2s;
+}
+.char-card:hover{border-color:var(--lamp); transform:translateY(-2px);}
+.char-card .cname{font-size:1.25em; color:var(--lamp-hi); letter-spacing:.1em;}
+.char-card .crole{color:var(--red-hi); font-size:.85em; margin:2px 0 6px;}
+.char-card .cdesc{font-size:.82em; color:var(--paper-dim); line-height:1.6;}
+.char-card.sel{border-color:var(--lamp); box-shadow:0 0 18px rgba(240,184,78,.25);}
+
+/* 手记 / 面板 */
+.overlay{
+  position:fixed; inset:0; z-index:80; background:rgba(4,7,14,.82);
+  display:flex; align-items:flex-end; justify-content:center;
+}
+.panel{
+  width:100%; max-width:620px; max-height:84vh; overflow-y:auto;
+  background:linear-gradient(180deg,#17233c,#0d1526);
+  border:1px solid var(--line); border-bottom:none; border-radius:14px 14px 0 0;
+  padding:18px 18px 30px;
+}
+.panel h3{margin-top:0; color:var(--lamp-hi);}
+.tabs{display:flex; gap:8px; margin-bottom:12px;}
+.tab{flex:1; text-align:center; padding:8px; border:1px solid rgba(233,220,195,.2);
+  border-radius:6px; cursor:pointer; color:var(--paper-dim); font-size:.95em;}
+.tab.on{border-color:var(--lamp); color:var(--lamp-hi); background:rgba(240,184,78,.10);}
+.memo-item{margin:10px 0; padding:10px 12px; background:rgba(255,255,255,.04);
+  border-left:2px solid var(--red); border-radius:4px; font-size:.95em;}
+.task-item{margin:10px 0; padding:10px 12px; background:rgba(255,255,255,.04); border-radius:4px;}
+.task-item .tick{color:var(--lamp); font-weight:bold; margin-right:6px;}
+
+/* 顶栏工具 */
+#hud{position:fixed; left:0; right:0; bottom:0; z-index:70; display:none;
+  background:rgba(8,12,22,.92); border-top:1px solid var(--line);
+  padding:8px 10px; backdrop-filter:blur(4px);}
+#hud .row{max-width:620px; margin:0 auto; display:flex; gap:8px;}
+#hud button{flex:1; padding:9px 4px; background:rgba(240,184,78,.08); color:var(--lamp-hi);
+  border:1px solid var(--line); border-radius:6px; font-family:inherit; font-size:.88em; cursor:pointer;}
+#sndbtn{position:fixed; top:10px; right:12px; z-index:70; background:rgba(8,12,22,.8);
+  border:1px solid var(--line); color:var(--lamp-hi); border-radius:6px; padding:6px 10px;
+  font-family:inherit; cursor:pointer; display:none;}
+
+/* 搜证 */
+.map-box{border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#0d1730;}
+svg text{fill:var(--paper); font-family:inherit;}
+.hot{fill:rgba(240,184,78,.14); stroke:var(--line); stroke-width:1.2; cursor:pointer; transition:all .2s;}
+.hot:hover{fill:rgba(240,184,78,.30);}
+.hot.glow{stroke:var(--lamp); animation:hotpulse 1.4s ease-in-out infinite;}
+@keyframes hotpulse{0%,100%{fill:rgba(240,184,78,.14);} 50%{fill:rgba(240,184,78,.34);}}
+.hot.done{fill:rgba(120,120,120,.10); stroke:rgba(233,220,195,.12);}
+.spot-btn{display:block; width:100%; margin:8px 0; padding:12px; text-align:left;
+  background:rgba(255,255,255,.05); border:1px solid rgba(233,220,195,.18); border-radius:8px;
+  color:var(--paper); font-family:inherit; font-size:1em; cursor:pointer;}
+.spot-btn:hover:not(:disabled){border-color:var(--lamp);}
+.spot-btn:disabled{opacity:.4; cursor:default;}
+.spot-btn .got{color:var(--lamp); float:right;}
+
+/* 线索卡 */
+.clue-card{
+  border:1px solid var(--lamp); border-radius:10px; padding:18px 16px; margin:14px 0;
+  background:linear-gradient(170deg,#1a2742,#101a2e);
+  box-shadow:0 6px 26px rgba(0,0,0,.5); position:relative;
+}
+.clue-card .cid{position:absolute; top:-11px; left:14px; background:var(--red); color:#fff;
+  font-size:.8em; letter-spacing:.2em; padding:2px 10px; border-radius:3px;}
+.clue-card .ct{color:var(--lamp-hi); font-size:1.15em; letter-spacing:.08em; margin:4px 0 10px;}
+.clue-card .cx{font-size:.96em; line-height:1.9;}
+.clue-mini{margin:8px 0; padding:9px 12px; background:rgba(255,255,255,.04);
+  border-left:2px solid var(--lamp); border-radius:4px; font-size:.9em; cursor:pointer;}
+.clue-mini .hidetag{color:var(--red-hi); font-size:.8em; margin-left:6px;}
+
+/* 讨论 */
+.say{margin:14px 0; padding:12px 14px; border-radius:8px; background:rgba(255,255,255,.045);
+  border:1px solid rgba(233,220,195,.12); animation:fadein .4s ease both;}
+.say .who{color:var(--lamp-hi); letter-spacing:.1em; margin-bottom:4px; font-size:.95em;}
+.say .who .wrole{color:var(--paper-dim); font-size:.8em; margin-left:8px;}
+.say.me{border-color:rgba(200,80,63,.5);}
+.say.dm-say{background:rgba(240,184,78,.06); border-left:3px solid var(--lamp);}
+.mono{font-style:italic; color:var(--paper-dim);}
+
+/* 送信 */
+#letter{width:100%; min-height:64px; resize:none; padding:12px; font-size:1.1em;
+  font-family:inherit; color:var(--ink); background:linear-gradient(180deg,#e9dcc3,#dccbA6);
+  border:none; border-radius:6px; letter-spacing:.1em;}
+.counter{text-align:right; font-size:.8em; color:var(--paper-dim);}
+
+/* 投票 */
+.vote-q{margin:18px 0; padding:14px; border:1px solid rgba(233,220,195,.14); border-radius:10px;}
+.vote-q .qt{color:var(--lamp-hi); letter-spacing:.08em; margin-bottom:8px;}
+
+/* 复盘 */
+.reveal-title{text-align:center; font-size:1.6em; color:var(--lamp-hi); letter-spacing:.3em;
+  margin:26px 0 6px;}
+.reveal-sub{text-align:center; color:var(--red-hi); letter-spacing:.2em; margin-bottom:18px;}
+.chain{margin:10px 0; padding:10px 12px; background:rgba(168,50,50,.10);
+  border-left:2px solid var(--red); border-radius:4px; font-size:.93em;}
+
+/* 结算 */
+.result-banner{text-align:center; padding:18px; margin:16px 0; border-radius:10px;
+  border:1px solid var(--lamp); background:rgba(240,184,78,.08);}
+.result-banner.bad{border-color:var(--red); background:rgba(168,50,50,.10);}
+.result-banner .big{font-size:1.5em; letter-spacing:.2em; margin:6px 0;}
+
+/* 彩蛋 */
+#egg-lamps{display:flex; justify-content:center; gap:18px; margin:36px 0;}
+.egg-lamp{width:10px; height:16px; border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:#333; transition:all 1.6s ease;}
+.egg-lamp.lit{background:radial-gradient(circle at 50% 70%, #fff3c4, var(--lamp) 55%, #d07a1e);
+  box-shadow:0 0 26px 8px rgba(240,184,78,.4);}
+.egg-line{opacity:0; transition:opacity 2s ease; margin:1.1em 0; text-align:center;}
+.egg-line.show{opacity:1;}
+.egg-final{font-size:1.4em; color:var(--lamp-hi); letter-spacing:.2em;
+  text-shadow:0 0 20px rgba(240,184,78,.5);}
+
+.badge{display:inline-block; font-size:.72em; border:1px solid var(--line); border-radius:3px;
+  padding:0 6px; color:var(--paper-dim); margin-left:6px;}
+
+/* 音频面板 / 提示条 */
+#toast{position:fixed; top:52px; left:50%; transform:translateX(-50%) translateY(-8px); z-index:90;
+  background:rgba(20,28,46,.95); border:1px solid var(--lamp); color:var(--lamp-hi);
+  padding:8px 18px; border-radius:20px; font-size:.9em; letter-spacing:.1em;
+  opacity:0; pointer-events:none; transition:all .35s ease;}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+.vol-row{display:flex; align-items:center; justify-content:space-between; gap:12px;
+  margin:12px 0; padding:10px 12px; background:rgba(255,255,255,.04); border-radius:8px;}
+.vol-row span{letter-spacing:.06em;}
+.opt-btn.sw{width:auto; margin:0; padding:6px 18px; text-align:center; letter-spacing:.2em;}
+.opt-btn.sw.on{border-color:var(--lamp); color:var(--lamp-hi); background:rgba(240,184,78,.14);}
+#volslider{flex:1; accent-color:var(--lamp); height:4px;}
+@media (min-width:640px){ .game-title{font-size:3.8em;} }
+</style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<button id="sndbtn" onclick="AudioUI.panel()">🔊 音频</button>
+<div id="toast"></div>
+<div id="app"></div>
+<div id="hud"><div class="row">
+  <button onclick="UI.memo()">📖 随身手记</button>
+  <button onclick="UI.bag()">🎒 证据袋</button>
+  <button onclick="UI.save2title()">💾 存回标题</button>
+</div></div>
+<div id="ovl" style="display:none"></div>
+<script>
+/* =====================================================================
+   《灯火会宁》单机沉浸版 · 数据层
+   ===================================================================== */
+var DATA = {};
+
+DATA.intro = [
+ "1936年10月7日深夜，甘肃会宁县城外三十里，老君坡驿站。",
+ "三天前，红一方面军先遣队秘密进驻此地，为即将到来的三军会师做最后的联络准备。驿站里住着七个人：指战员、宣传队员、卫生员、向导，还有一位从西安千里迢迢赶来的战地记者。",
+ "今夜，一封关乎会师路线的绝密电文刚刚送达。电文锁在参谋老周随身的铁匣里——里面有敌军布防图、会师地点的备用方案，以及一份潜伏在我方内部的可疑人员名单。",
+ "午夜时分，一声枪响。",
+ "老周被发现死在自己的房间里，铁匣大开，电文不翼而飞。门外大雪封山，驿站的马一匹不少——凶手，就在你们六个人中间。",
+ "而比找出凶手更重要的是：天亮之前，必须把电文的下落弄清楚。十万红军将士的会师之路，不能出任何差错。",
+ "油灯还亮着。雪落无声。",
+ "会宁城头的灯火，就在三十里外等着你们。"
+];
+
+DATA.rules = [
+ "【本格推理】凶手在六人之中，且只有一位。动机、手法、时机，均可由线索推出。",
+ "【双重目标】找出杀害老周的凶手；找回（或确认下落）绝密电文。",
+ "【隐藏任务】你除了公共目标，还有自己的个人秘密任务（见随身手记）。有时候，守住秘密比破案更重要。",
+ "【阵营暗线】六人之中混有一名敌方潜伏人员，代号「黄雀」。潜伏者不一定是凶手。",
+ "【游戏流程】三幕推进：每幕先搜证、后讨论；第二轮搜证后有「雪夜送信」机制；终局投票指认，随后真相复盘。",
+ "【单机模式】其余五名角色由剧本化AI扮演，系统担任DM（主持人）。你的每个选择都会被记住。"
+];
+
+DATA.chars = {
+ huoshan:{
+  name:"霍山", role:"先遣队队长", age:32, gender:"男",
+  tag:"从湘江血战里爬出来的老兵，右手缺两根手指",
+  pub:"你是先遣队队长，全驿站军衔最高的人。老周死后，按纪律由你临时主持局面。大家都知道你1934年从中央苏区突围，湘江一战全连只剩你和两个人，右手缺了食指和中指——所以你打枪用左手。",
+  dmn:"DM（低声）：你收到了密电——队内有「黄雀」。你是今夜的主持者，也是最不能乱的人。",
+  mem:[
+   "老周是你过命的交情。遵义会议之后他被调到先遣队，你们搭了半年班子。",
+   "今晚21点，你亲眼看见老周把电文锁进铁匣，钥匙挂在他自己脖子上。",
+   "22点半，你查哨回来，在院子里碰见了马三爷，他神色慌张，说去马棚看马。你闻到他身上有酒气。",
+   "23点50分左右，你听到一声闷响，不像枪声，更像有人重重摔了门。你提枪冲出屋，发现东厢房的门虚掩着，老周已经倒在炕上，胸口中弹，铁匣开着，里面空空如也。",
+   "你检查了门窗：窗户从里面闩着，门没有撬痕。雪地里只有一串通向马棚又折返的脚印——是马三爷的。"
+  ],
+  sec:[
+   "半个月前，上级密电告诉你：先遣队里可能有敌方潜伏人员，代号「黄雀」。你还没来得及排查。这个秘密不能说——打草惊蛇，黄雀就会缩回去。",
+   "你知道老周脖子上的钥匙没有被拿走（你验尸时摸到了，还在他衣领里）。也就是说，开铁匣的人用的不是老周的钥匙——要么有备用钥匙，要么铁匣根本没锁。"
+  ],
+  tasks:[
+   {id:"hs1", text:"找出凶手，找回电文"},
+   {id:"hs2", text:"暗中排查「黄雀」是谁，终局指认出来"},
+   {id:"hs3", text:"你是队长，不能暴露慌乱"}
+  ],
+  room:"枕边压着那份密电抄件。「队内有黄雀，慎查勿惊。」你把这八个字在心里过了一遍又一遍——五张脸，哪一张后面藏着黄雀？"
+ },
+ lin:{
+  name:"林晚星", role:"宣传队队员", age:21, gender:"女",
+  tag:"背着一台油印机走完长征的「笔杆子」，会唱《十送红军》",
+  pub:"你是宣传队最年轻的队员，负责油印快报、写标语、教老乡识字。你的油印机是从江西一路背来的，比你的命还重。你性格开朗，驿站里谁都跟你聊得来。",
+  dmn:"DM（低声）：你的蜡纸今晚被人借过。记住——重要的话，用速记符号记下来。",
+  mem:[
+   "今晚20点，老周找你借过油印机的蜡纸和铁笔，说「要抄个东西，急着用」。21点他还回来了，手上沾着油墨。",
+   "21点半，你听见老周屋里他和沈青梧在低声争执，你只听到沈青梧说了一句：「老周，你我都是明白人，这事瞒不住的。」然后门就关上了。",
+   "23点，你在自己房里刻蜡纸，刻的是明天要贴的标语：「庆祝三军会师」。你听到院子里有脚步声，很急，往马棚方向去了。你没出去看。",
+   "枪响之后你第一个跑到东厢房，你注意到一个细节：桌上的油灯是灭的，但灯罩还是烫的——说明灯刚灭不久，或者是被人故意吹灭的。"
+  ],
+  sec:[
+   "你有个习惯：重要的话你会用速记符号记在随身小本上。今晚21点半那段争执，你隔着墙速记了后半句——「……名单上有你我的名字，你信不信？」你一直没想明白「名单」是什么名单。",
+   "你暗恋霍山。全队都知道，只有霍山装作不知道。这不是任务，这是你的心事。",
+   "你其实会拆装机要锁。出发前机要科的同志教过你。如果铁匣锁孔有蜡纸油墨残留，你能认出来。"
+  ],
+  tasks:[
+   {id:"ln1", text:"找出凶手"},
+   {id:"ln2", text:"搞明白「名单」指的是什么，它在哪"},
+   {id:"ln3", text:"保护宣传队的声誉——若有人暗示电文是用你的蜡纸复制的，想好怎么解释"}
+  ],
+  room:"油印机擦得锃亮，蜡纸筒立在墙角。速记本上那行字你看了十几遍：「名单上有你我的名字。」……还有，你想起霍山查哨时挺直的背影，赶紧摇了摇头。"
+ },
+ qin:{
+  name:"秦白术", role:"卫生员", age:26, gender:"女",
+  tag:"过草地时救活了十一个伤员的「活菩萨」，随身药箱从不离手",
+  pub:"你是先遣队卫生员，药品比粮食金贵的年代，你手里的药箱就是全队半条命。过草地时你用半碗青稞面救活了十一个人，大家叫你「活菩萨」。",
+  dmn:"DM（低声）：老周是你唯一的单线联系人。他死了，天亮后接应的人只认暗号不认人——而暗号，只有老周知道。",
+  mem:[
+   "今晚19点，老周来找你要过一小瓶安眠药粉，说失眠，你给了他三天的量。他接过药瓶时手在抖——你以为他是累的。",
+   "22点，石敢当来找你包扎，他右腿旧伤裂开了，渗血。你注意到他靴底沾着新鲜的黄泥——驿站院子是夯土，没有黄泥，最近的黄泥地在后山。",
+   "枪响后你参与验尸：老周胸口一处枪伤，近距离射击，当场死亡。但你发现死者嘴角有微量白色泡沫，指甲发青——这不像单纯的枪伤致死，你怀疑他在中枪前已经中了毒或服药过量。",
+   "老周右手攥着的半截烧焦的纸，你掰开看了一眼（没声张）：上面只剩几个能辨认的字——「……雀……名单……会宁……」"
+  ],
+  sec:[
+   "你的药箱里少了一瓶马钱子碱（剧毒，极少量即可致死）。你三天前盘库时发现的，你不敢上报——在那个年代，卫生员丢了毒药是要被枪毙的。你怀疑是驿站里的人偷的。",
+   "你其实是中共地下党员发展的外围人员，身份除了老周没人知道。老周是你唯一的单线联系人。他死了，你的身份没人能证明了。你必须在天亮前从电文或遗物里找到确认你身份的办法，否则你会被当成「黄雀」。"
+  ],
+  tasks:[
+   {id:"qn1", text:"查明老周真正的死因（枪杀还是毒杀）"},
+   {id:"qn2", text:"找到能证明你清白身份的东西"},
+   {id:"qn3", text:"如果可能，查出谁偷了你的马钱子碱"}
+  ],
+  room:"药箱上了锁，可锁防不住自己人。马钱子碱的空位像一道疤。老周死了，再没有人能证明你是谁——除非，找到他留下的东西。"
+ },
+ shi:{
+  name:"石敢当", role:"侦察排排长", age:28, gender:"男",
+  tag:"沉默寡言的老侦察兵，腿上有枪伤，走路微跛",
+  pub:"你是侦察排排长，全队的眼睛和耳朵。右腿在娄山关挨过一枪，走路微跛，但翻山比谁都快。你话少，说出口的每一句都算数。",
+  dmn:"DM（单独把你拉到灯下，声音压得极低）：23点40分那枪，是你开的。你翻窗进去时，老周已经服毒濒死，是他求你补这一枪、伪造他杀现场——为了钓出黄雀。你不是凶手，你是完成他遗愿的人。守住这个秘密，至少守到第三轮。",
+  mem:[
+   "今晚21点，你按惯例去后山侦察敌军动向。22点回驿站的路上，你看到老君庙方向有短暂的灯光信号，三短一长——这是军用联络信号。你没来得及查清就回来了。",
+   "22点你找秦白术包扎腿伤——旧伤是自己裂开的，因为后山雪滑你摔了一跤。",
+   "23点半，你在院墙外巡逻，看见一个人影从东厢房后窗翻进去，身形像是男人，偏瘦。你喊了一声，人影不见了。你绕到前门时，枪响了。",
+   "你验过现场后窗：窗闩是从里面扣上的——但窗台积雪上有一个不完整的掌印，说明有人动过窗户，之后窗又被重新闩上了。"
+  ],
+  sec:[
+   "你在后山看到的灯光信号，你认出来了——那是国民党特务机关「西北行营」的联络信号。先遣队里有敌特，信号是在给城里报信。你没上报，因为你想自己抓住这条大鱼——你弟弟石敢柱1935年在包座战役中被俘后投了敌，这事你一直瞒着组织，你怕被牵连。",
+   "你怀疑翻窗的人是沈青梧（身形相似），但你没看清脸，不敢乱咬。",
+   "（只有你自己知道）23:40那枪是你开的。老周濒死之际向你坦白了一切，求你补枪伪造他杀——好让黄雀放松警惕去取电文。你含泪开的枪。窗台的掌印缺食指压痕，是因为你握枪的手抖得扶不稳窗棂。"
+  ],
+  tasks:[
+   {id:"sg1", text:"找出凶手，更要找出「灯光信号」是发给谁、谁发的"},
+   {id:"sg2", text:"守住你弟弟的秘密；守住「你开的枪」到第三轮"},
+   {id:"sg3", text:"窗台那个掌印——想办法在不声张的情况下弄明白"}
+  ],
+  room:"你坐在炕沿，一遍遍擦枪。枪膛里少了一发子弹，只有你知道那一发去了哪儿。窗外雪落无声。老周最后看你的眼神，你这辈子都忘不掉。"
+ },
+ ma:{
+  name:"马三爷", role:"向导兼马帮头领", age:51, gender:"男",
+  tag:"会宁本地人，给红军带路三个月，熟悉每一条山道",
+  pub:"你是会宁本地人，马帮头领，三个月前开始给红军带路。红军说话算数、买卖公平，你心里服。你熟悉方圆百里的每一条山道，今晚的引路方案是你画的。",
+  dmn:"DM（单独把你叫进里屋，吹熄了一盏灯）：三爷，戏该开场了。你袖口里侧缝着一块黄雀补丁——你，就是「黄雀」。三个月前西北行营扣了你弟弟，把你策反。马钱子碱是你偷的，井边铁盒里的字条和药纸是你自导自演的「报失」。你剧本里那套「收钱想稳住对方」的说辞，是你给自己留的退路。任务：别被指认。另外——若你愿意，把「鹰嘴崖有埋伏」的真话送出去，算是给自己留一条人路。",
+  mem:[
+   "今晚21点，老周私下找过你，问你：「三爷，去会宁除了大道，还有没有连地图都不标的小路？」你告诉他有一条鹰嘴崖栈道，只有马帮知道。老周记下了，脸色很凝重。",
+   "22点半，你确实去了马棚——你喝了酒。你的公开说辞是：今晚19点，一个穿皮货商衣服的人在驿站外拦住你，塞给你十块大洋，让你「明天一早把红军往鹰嘴崖带」。你没答应也没拒绝，大洋你收了——你想先稳住对方，再找机会告诉老周。结果你还没说，老周就死了。",
+   "枪响后你在马棚，你看见沈青梧从后院方向快步走回自己房间，手里好像攥着一卷纸。",
+   "你知道一个没人知道的细节：驿站水井后面埋着你们马帮的一个旧铁盒，是前清留下的，你平时藏私货用的——今晚你去马棚时，发现井边的浮土被人动过。"
+  ],
+  sec:[
+   "那十块大洋还在你怀里。你不敢说，说了就说不清。",
+   "你的公开说辞：那个「皮货商」腰间别着枪，袖口有一块补丁缝成黄雀的形状——你们跑江湖的管这种人叫「带响器的」。",
+   "（真相）你袖口里侧自己缝着一块黄雀补丁。大洋是黄雀的活动经费，咬齿验银是江湖记账的规矩。井边铁盒是你自己撬的，药纸和字条是你塞进去再「报失」的。你向老周献计鹰嘴崖，是要把会师队伍引进绝地。你最怕的是：老周好像已经察觉了。",
+   "（脱罪剧本）一旦败露，就咬死「收钱是为了稳住对方」「皮货商袖口有黄雀」。"
+  ],
+  tasks:[
+   {id:"ma1", text:"洗清自己（你的脚印、你的酒气都对你不利）——终局不被指认"},
+   {id:"ma2", text:"把「鹰嘴崖有埋伏」的信息成功传给队伍（雪夜送信是唯一的机会）"},
+   {id:"ma3", text:"找出动过井边土的人——或者说，圆好这个谎"}
+  ],
+  room:"十块大洋在怀里硌得慌。你摸了摸袖口里侧那块黄雀补丁，又想起被扣押的弟弟。鹰嘴崖……那可是绝地。一句话送出去，是救十万红军，还是救你弟弟？你一夜没敢合眼。"
+ },
+ shen:{
+  name:"沈青梧", role:"《大公报》战地记者", age:29, gender:"男",
+  tag:"从西安而来，说要「把长征写给全中国看」",
+  pub:"你是《大公报》记者，从西安辗转而来，要写一篇「让全中国知道长征」的报道。你见多识广，谈吐不凡，驿站里的人对你又敬又防。",
+  dmn:"DM（低声）：你不只是记者。你是北方局的交通员。皮箱夹层里的名单副件，比你这条命值钱。",
+  mem:[
+   "今晚20点，老周找你长谈过一次。他问你：「沈记者，如果你的报纸能发一条消息，让全天下以为会师地点在静宁，你做不做得到？」你答应了——你们商量的是疑兵之计：用报纸放假消息掩护真实会师路线。21点半的争执是你们在争「消息放多大」，最后你吼了那句「这事瞒不住的」——你指的是纸包不住火。",
+   "22点45分，你回房誊写稿件，标题是《三军大会师在即，陕甘门户洞开》——你故意写错地点，这是给特务看的饵。",
+   "23点40分，你听到东厢房方向有动静，你出门查看，在后院雪地捡到一枚铜纽扣，样式不是红军的，倒像是西北军旧式军服上的。你把它收了起来。",
+   "枪响后你确实从后院快步回房——你手里攥的是你的采访本，不是电文。你怕被人翻走采访本，因为里面记着你从西安一路听来的各种消息源名单。"
+  ],
+  sec:[
+   "你不只是记者。你是中共地下情报系统「北方局」的交通员，记者身份是掩护。你此行真正任务：把「黄雀」名单带给会宁的接应人——这份名单正是老周电文里那份名单的副件，老周那里是正件。你的副件此刻缝在你的皮箱夹层里。",
+   "老周今晚死了，正件失踪。如果黄雀先拿到正件，再对照你的副件，整个西北的地下网就完了。你绝对不能暴露自己的真实身份，也不能暴露皮箱里的东西。",
+   "你怀疑马三爷收了特务的钱（你见过那个皮货商在驿站外晃），但你也怀疑凶手另有其人。"
+  ],
+  tasks:[
+   {id:"sh1", text:"找回正件电文，或确认它已被销毁（只要没落到黄雀手里）"},
+   {id:"sh2", text:"终局时公开指认出「黄雀」——接头信物特征：袖口或随身物件上有黄雀图案"},
+   {id:"sh3", text:"活下去，保住采访本和皮箱夹层"}
+  ],
+  room:"皮箱的夹层贴着你的体温。采访本锁在最底层。老周死了，正件下落不明——若黄雀先拿到正件，再对上你的副件……你不敢想下去。"
+ }
+};
+</script>
+<script>
+/* ---------- 线索卡（18张，忠实于剧本原文） ---------- */
+DATA.clues = {
+ A1:{t:"现场·弹壳", x:"东厢房炕脚发现一枚弹壳，型号为勃朗宁M1900（7.65mm）。红军先遣队配枪多为驳壳枪（毛瑟），霍山的配枪也是驳壳枪。勃朗宁M1900是军官或外来人员常用的手枪。"},
+ A2:{t:"现场·窗闩", x:"东厢房后窗闩从内侧扣死，窗台积雪有一枚不完整的右手掌印，缺食指压痕。"},
+ A3:{t:"验尸·其一", x:"死者胸口中弹一处，近距离射击。死亡时间约在23:40—0:10之间。"},
+ A4:{t:"雪地脚印", x:"院中雪地脚印三串：马三爷往返马棚（22:30前后）；一串从后院墙到东厢房后窗（深、急，男性靴印）；一串从厨房到水井（23:00前后，步幅小，鞋底有防滑钉）。"},
+ A5:{t:"油灯", x:"东厢房油灯熄灭，灯罩烫手，灯油还剩大半。说明灯是被人吹灭的，而非燃尽。"},
+ A6:{t:"铁匣", x:"铁匣未损坏，锁孔完好，锁孔内壁有微量油墨和蜡屑。"},
+ B1:{t:"验尸·其二", x:"秦白术带队复检：死者指甲青紫、嘴角白沫、胃部有甜腥气——马钱子碱中毒迹象，且毒发时间应在23:00前后，早于中枪时间。结论：老周中枪时很可能已经死了或濒死。"},
+ B2:{t:"烧焦纸片", x:"死者手中纸片经拼对，可辨认：「……黄雀……名单……藏于井……会宁酉时……」"},
+ B3:{t:"蜡纸与铁笔", x:"林晚星的铁笔尖上有不属于蜡纸的金属刮屑；机要锁若被蜡纸拓过钥匙模，锁孔会留油墨蜡屑（呼应A6）。有人用蜡纸拓印了铁匣钥匙。"},
+ B4:{t:"水井铁盒", x:"搜查水井后方浮土：马帮旧铁盒被人撬开过，里面有一张包毒药的桑皮纸（残留白色粉末），和一张字条：「事成之后，鹰嘴崖接应。」字迹为左手书写。"},
+ B5:{t:"沈青梧的铜纽扣", x:"（沈青梧主动出示或被搜身发现）西北军旧式军服纽扣，背面刻着一个极小的「黄」字。"},
+ B6:{t:"灯光信号", x:"石敢当公开：21:00后山见老君庙方向灯光信号「三短一长」。查证会宁地方志：老君庙今晚无人上香。"},
+ B7:{t:"霍山的密电", x:"搜霍山房间：枕头下压着半个月前的密电抄件：「队内有黄雀，慎查勿惊。」"},
+ C1:{t:"药箱盘库单", x:"秦白术药箱夹层盘库单：马钱子碱一瓶，三日前标注在库，今晨盘点缺失。"},
+ C2:{t:"大洋", x:"搜马三爷：十块大洋，其中一块边缘有齿痕——马帮规矩，「定钱」才会咬齿验银。"},
+ C3:{t:"皮箱夹层", x:"搜查沈青梧皮箱：夹层有黄雀名单副件（列出会宁、静宁两地七个地下联络点的代号）。沈青梧当场承认了自己交通员的身份。"},
+ C4:{t:"字迹比对", x:"林晚星用速记本比对B4字条：「左手书写，笔画顿挫习惯」——在场习惯用左手的，只有右手缺指的霍山……以及右手缠着绷带写字不便的某个人。（干扰与正解的双重门）"},
+ C5:{t:"老周的遗书", x:"拆开东厢房炕洞砖：老周三日前写的遗书。「余自知时日无多，黄雀已盯上余。若余死于非命，勿悲勿乱，名单已分藏于最不可疑之处。会师事大，个人生死事小。——周慕怀」"}
+};
+
+/* ---------- 三轮搜证：场景→热点→线索 ---------- */
+DATA.rounds = [
+ { // 第一轮
+  name:"第一轮搜证", sub:"每人抽2张，公开宣读",
+  scenes:{
+   east:{name:"东厢房·案发现场", spots:[
+     {clue:"A1", label:"炕脚·一枚弹壳"},
+     {clue:"A2", label:"后窗·窗闩与掌印"},
+     {clue:"A3", label:"炕上·验尸"},
+     {clue:"A5", label:"桌上·熄灭的油灯"},
+     {clue:"A6", label:"炕头·洞开的铁匣"}
+   ]},
+   yard:{name:"院子·雪地", spots:[
+     {clue:"A4", label:"雪地里三串脚印"},
+     {flavor:"雪还在下，脚印的边缘已经开始模糊了。再过一个时辰，什么痕迹都会被盖掉。"}
+   ]},
+   stable:{name:"马棚", spots:[{flavor:"六匹马一匹不少，槽里的草料还冒着热气。马槽边有一只空酒碗。"}]},
+   kitchen:{name:"厨房", spots:[{flavor:"灶膛的火没熄透，锅盖扣得很严。菜刀、擀面杖都在原处。"}]},
+   well:{name:"水井", spots:[{flavor:"井口结了一圈冰。井后有一片浮土，颜色比周围新——但此刻你还顾不上细看。"}]},
+   back:{name:"后院墙", spots:[{flavor:"墙头的雪有一道蹭痕，墙外是黑黢黢的后山。风从老君庙的方向吹过来。"}]},
+   rooms:{name:"住屋排", rooms:true, spots:[]}
+  }
+ },
+ { // 第二轮
+  name:"第二轮搜证", sub:"每人抽2张，可私藏一张",
+  scenes:{
+   east:{name:"东厢房·复检", spots:[
+     {clue:"B1", label:"复检·毒理征象"},
+     {clue:"B2", label:"拼对·烧焦的纸片"}
+   ]},
+   yard:{name:"院子·雪地", spots:[{flavor:"新雪盖住了旧脚印。你蹲下身，还能看出厨房到水井那串脚印的钉鞋纹路。"}]},
+   stable:{name:"马棚", spots:[{flavor:"马三爷的那匹老马不安地刨着蹄子，像是察觉到了什么。"}]},
+   kitchen:{name:"厨房", spots:[{flavor:"灶台边有一小撮白色粉末的痕迹——也可能是碱面。你不敢声张。"}]},
+   well:{name:"水井", spots:[
+     {clue:"B4", label:"井后浮土·马帮旧铁盒"}
+   ]},
+   back:{name:"后院墙·老君庙方向", spots:[
+     {clue:"B6", label:"查证·灯光信号"}
+   ]},
+   rooms:{name:"住屋排", rooms:true, spots:[], roomSpots:{
+     huoshan:[{clue:"B7", label:"枕头下·密电抄件"}],
+     lin:[{clue:"B3", label:"油印机·铁笔与蜡纸"}],
+     qin:[{flavor:"药箱码得整整齐齐，但你知道，有一个位置是空的。"}],
+     shen:[{clue:"B5", label:"枕边·那枚铜纽扣"}]
+   }}
+  }
+ },
+ { // 第三轮
+  name:"第三轮搜证", sub:"每人1张，必须公开",
+  scenes:{
+   east:{name:"东厢房·炕洞", spots:[
+     {clue:"C5", label:"炕洞砖·老周的遗书"}
+   ]},
+   yard:{name:"院子·雪地", spots:[{flavor:"雪停了。天边有一丝极淡的鱼肚白。时间不多了。"}]},
+   stable:{name:"马棚·马三爷的行李", spots:[
+     {clue:"C2", label:"褡裢夹层·十块大洋"}
+   ]},
+   kitchen:{name:"厨房", spots:[{flavor:"一切都和昨夜一样。只是再没人有心思生火做饭了。"}]},
+   well:{name:"水井", spots:[{flavor:"铁盒已经空了。电文不在这里——「藏于井」三个字，像是故意写给人看的。"}]},
+   back:{name:"后院墙", spots:[{flavor:"老君庙方向再无灯光。信号发出去了，就收不回来了。"}]},
+   rooms:{name:"住屋排", rooms:true, spots:[], roomSpots:{
+     qin:[{clue:"C1", label:"药箱夹层·盘库单"}],
+     shen:[{clue:"C3", label:"皮箱夹层·名单副件"}],
+     lin:[{clue:"C4", label:"速记本·字迹比对"}],
+     huoshan:[{flavor:"房间整洁得近乎苛刻。一支左轮、半截蜡烛，再无长物。"}]
+   }}
+  }
+ }
+];
+
+/* ---------- NPC 三幕发言（真话、误导、情绪皆有） ---------- */
+DATA.talks = {
+ 1:{
+  dm:["第一轮讨论开始。窗外风吼得像狼，屋里的油灯芯子噼啪作响。","每个人说说：今夜，你在哪里，看见了什么。"],
+  huoshan:[
+   "都别乱，按纪律来。我是队长，今夜我主持。",
+   "22点半我查哨回来，在院子里碰见马三爷。他一身酒气，说去马棚看马。",
+   "东厢房窗户从里面闩着，门没有撬痕。雪地里只有一串去马棚又折返的脚印。外人进不来——凶手，就在这间屋里。"
+  ],
+  lin:[
+   "20点老周找我借过油印机的蜡纸和铁笔，说急着抄个东西。21点还回来的时候，手上全是油墨。",
+   "21点半，我听见老周和沈记者在屋里争执。沈记者说：「老周，你我都是明白人，这事瞒不住的。」然后门就关了。",
+   "枪响后我第一个到东厢房。桌上的油灯是灭的，可灯罩烫手——灯是刚被人吹灭的。黑灯瞎火里，那人干了什么？"
+  ],
+  qin:[
+   "19点，老周找我要了一小瓶安眠药粉，说失眠。他接药瓶的时候，手在抖。我以为是累的。",
+   "22点，石敢当来找我包扎腿伤。他靴底沾着新鲜的黄泥——咱们院子是夯土，哪来的黄泥？最近的黄泥地在后山。",
+   "我验了尸：胸口一处近距离枪伤。但……死者指甲发青，嘴角有白沫。这话我先放在这，不像单纯的枪伤。"
+  ],
+  shi:[
+   "21点我去后山侦察，22点回来。这是我每天的活，风雨不误。",
+   "23点半我在院墙外巡逻，看见一个人影从东厢房后窗翻进去。男的，偏瘦。我喊了一声，人就不见了。我绕到前门——枪响了。",
+   "窗台雪上有个不完整的掌印。有人动过窗户，又把窗闩重新扣上了。"
+  ],
+  ma:[
+   "我22点半是去了马棚！马是我的半个命，雪这么大，我不放心。喝了口酒暖身子，犯法吗？",
+   "枪响的时候我就在马棚。我看得真真的——沈记者从后院方向快步回屋，手里攥着一卷纸！",
+   "还有，井边那片浮土，今晚被人动过。我们马帮埋在那儿的旧铁盒……怕是出事了。"
+  ],
+  shen:[
+   "20点老周找我长谈，谈的是稿件。21点半我们是争了几句——新闻人的事，怎么写、写多大，意见不合而已。",
+   "23点40分，我在后院雪地捡到一枚铜纽扣。样式不是红军的。我收起来了。",
+   "枪响后我是从后院回屋，手里攥的是采访本。里面记着我一路的消息源。谁要翻，除非从我手里抢。"
+  ]
+ },
+ 2:{
+  dm:["复检的结果摆在桌上，屋里的空气比外面的雪还冷。","第二轮讨论。这一轮，每个人都要回答一个问题：毒，从哪儿来。"],
+  huoshan:[
+   "先说一件事：老周脖子上的钥匙还在，我验尸时摸到了，就在他衣领里。开铁匣的人，用的不是他的钥匙。",
+   "铁匣锁孔里有油墨和蜡屑——有人用蜡纸拓过钥匙模。会这手活的，全队没几个。",
+   "我枕头下的东西，既然被翻出来了，我不瞒：半个月前上级密电——「队内有黄雀，慎查勿惊。」黄雀，就在这间屋里。"
+  ],
+  lin:[
+   "我的铁笔尖上有金属刮屑——有人拿它刮过锁。我的蜡纸，有人动过。可宣传队的东西，从来都是大家一起用的！",
+   "21点半那段争执，我隔着墙速记了后半句：「……名单上有你我的名字，你信不信？」名单，到底是什么名单？"
+  ],
+  qin:[
+   "复检确认了：指甲青紫、嘴角白沫、胃里有甜腥气——马钱子碱中毒，毒发在23点前后。比枪早。",
+   "我索性说了吧：我的药箱，三天前少了一瓶马钱子碱。是我失察，我认处分。可偷药的人，就在这间屋里。",
+   "老周中枪的时候……很可能已经死了，或者濒死。这句话我说出口，是要担干系的。"
+  ],
+  shi:[
+   "21点，后山老君庙方向有灯光信号：三短一长。军用联络信号。查证过了——今晚老君庙，无人上香。",
+   "我靴底的黄泥是后山摔的，腿伤是自己裂的。我这条腿，翻不动窗。",
+   "信号是发给城里特务的。也就是说，队里有敌特，而且昨晚，他报过信了。"
+  ],
+  ma:[
+   "大洋……好，我认，我怀里是有十块大洋！今晚19点，一个皮货商拦住我，让我明天把红军往鹰嘴崖带！我没答应！我收钱是想稳住他！",
+   "鹰嘴崖是绝地，一夫当关，那是要卖了红军啊！那皮货商腰间别着枪，袖口缝着黄雀补丁——跑江湖的管这叫「带响器的」！",
+   "井边铁盒里有包毒药的纸？！盒子是我埋的不假，可药不是我的——有人栽赃！"
+  ],
+  shen:[
+   "铜纽扣背面，刻着一个极小的「黄」字。西北军旧式军服的东西。黄——诸君想到什么？",
+   "我和老周争的，是报上放消息放多大。疑兵之计：让全天下以为会师在静宁，掩护真实路线。这话我本不该说，今夜顾不得了。",
+   "我最后说一句：老周死前最怕的，不是自己死，是那份名单落到黄雀手里。"
+  ]
+ },
+ 3:{
+  dm:["遗书从炕洞里取了出来，油灯凑得很近，纸页黄得像深秋的叶子。","最后一轮讨论。天，快亮了。"],
+  huoshan:[
+   "遗书大家都看到了——「名单已分藏于最不可疑之处。」老周三天前就知道自己会死。他把一切都安排好了。",
+   "左手字条？我右手缺两根手指，写字是用左手。可那字条不是我写的。我霍山湘江战役死人堆里爬出来的，要杀谁，用不着下毒。",
+   "我现在只问一句：老周20点借蜡纸，21点还回去——那一个时辰，他到底「抄」了什么？"
+  ],
+  lin:[
+   "我用速记本比对过井边字条：左手书写，顿挫习惯。在场用左手的……霍山队长是右手残疾，还有右手缠着绷带写字不便的人。",
+   "可我总觉得不对——那字条起笔的钩，太刻意了，像是故意写出来的「左手字」。",
+   "还有，老周借蜡纸那晚，还回来的时候……他笑了一下。我现在才想起来。"
+  ],
+  qin:[
+   "盘库单你们看了：马钱子碱三天前还在库里，今晨没了。偷药的人，就是下毒的人。",
+   "遗书落款是三日前。安眠药的瓶子还在他枕边，没开封——他根本不是失眠，他是来让我「看见他手抖」的。他连这个都在布置。",
+   "一个自知必死的人，会把最重要的东西藏在哪？藏在天天见得着、谁也不防的地方。"
+  ],
+  shi:[
+   "窗台掌印缺食指压痕——我现在想明白了：不是那人没有食指，是他握枪的手抖得扶不稳窗棂。",
+   "信号、毒药、鹰嘴崖、左手字条……都串起来了。发信号的人，下毒的人，想把红军引进绝地的人，是同一个。",
+   "有些话我现在不能说。复盘的时候，我会把一切说清楚。我对得起老周。"
+  ],
+  ma:[
+   "遗书说「藏于井」，纸片上也是这么写的！电文就在井里！……什么，井里铁盒是空的？那、那就是被人先拿走了！",
+   "字条是左手写的，全队谁用左手你们心里有数！往我身上引，没门！我马三爷给红军带了三个月的路，我家三代走这条道！",
+   "……那个皮货商，袖口有黄雀补丁，我说了多少遍了！"
+  ],
+  shen:[
+   "我的皮箱，好，我当众打开——夹层里是黄雀名单的副件。我是北方局的交通员。正件，在老周失踪的电文里。",
+   "黄雀的接头信物：袖口或随身物件上，有黄雀图案。诸位，看看身边人的袖口。",
+   "名单「藏于最不可疑之处」。什么地方最不可疑？天天要贴出去给人看的东西——标语、快报、墙。"
+  ]
+ }
+};
+</script>
+<script>
+/* ---------- 追问选项：按【轮次×玩家角色】各3条（数据驱动，6套差异） ---------- */
+DATA.followups = {
+ 1:{
+  huoshan:[
+   {q:"问马三爷：你去马棚待了多久？", who:"ma", a:"一袋烟的工夫。雪大，我怕马惊着。你不信去看，马的嚼子我都紧了一遍。"},
+   {q:"问秦白术：老周的手抖，从什么时候开始的？", who:"qin", a:"这三日常见他按着太阳穴。我以为是失眠……现在想来，倒像是心里压着事。"},
+   {q:"问石敢当：后山今晚有什么动静？", who:"shi", a:"雪太大，看不清。……有些事我再查查，查清了会说。"}
+  ],
+  lin:[
+   {q:"问沈青梧：你和老周争的「这事瞒不住」，是什么事？", who:"shen", a:"稿件的写法。怎么写、写多少，我们意见不合。仅此而已。"},
+   {q:"问霍山：窗闩从里面闩着，外人怎么进的东厢房？", who:"huoshan", a:"进不去。所以凶手要么有钥匙，要么……根本不需要「进」。"},
+   {q:"问马三爷：井边的铁盒，你什么时候埋的？", who:"ma", a:"三个月前刚来驿站就埋了。今晚我去看，土是新的——有人动过！"}
+  ],
+  qin:[
+   {q:"问石敢当：你靴底的黄泥，后山哪个方向沾的？", who:"shi", a:"北坡。我去看了老君庙方向的动静。……没了。"},
+   {q:"问林晚星：老周借蜡纸，抄的是什么？", who:"lin", a:"他没说。还回来时铁笔擦得很干净，干净得反常。"},
+   {q:"问沈青梧：你捡的铜纽扣，能给我看看吗？", who:"shen", a:"可以。看这针脚和铜质——西北军旧式军服，至少五年以上的旧物。"}
+  ],
+  shi:[
+   {q:"问霍山：你听到的那声闷响，是几点？", who:"huoshan", a:"23点50分前后。不像枪声。……也许枪声被什么东西闷住了。"},
+   {q:"问马三爷：那个皮货商，你以前见过吗？", who:"ma", a:"眼生。跑江湖三十年，袖口缝黄雀的「带响器的」，我劝你们都躲远点。"},
+   {q:"问沈青梧：你的稿子，写的会师地点是哪儿？", who:"shen", a:"静宁。……别这么看我。见报的东西，未必是真话。"}
+  ],
+  ma:[
+   {q:"问霍山：老周脖子上的钥匙还在吗？", who:"huoshan", a:"在。衣领里。……这意味着什么，你自己想。"},
+   {q:"问秦白术：你药箱里丢的东西，没上报吧？", who:"qin", a:"……你什么意思？（她脸色变了）药箱的事，我自会向组织交代。"},
+   {q:"问沈青梧：你在后院，真只捡了个纽扣？", who:"shen", a:"三爷希望我还捡到什么？电文吗？（他笑了笑，把采访本往怀里收了收）"}
+  ],
+  shen:[
+   {q:"问林晚星：蜡纸拓钥匙，需要什么条件？", who:"lin", a:"得碰到钥匙本体，还得懂机要锁。……全队懂这个的，不多。"},
+   {q:"问马三爷：鹰嘴崖栈道，除了马帮还有人知道吗？", who:"ma", a:"没了。那是绝地。我昨儿……我本想提醒老周的。（他欲言又止）"},
+   {q:"问石敢当：三短一长，是哪家的信号？", who:"shi", a:"西北行营。国民党特务机关。……队里有他们的人。"}
+  ]
+ },
+ 2:{
+  huoshan:[
+   {q:"问马三爷：十块大洋，齿痕是怎么回事？", who:"ma", a:"马帮规矩，定钱才咬齿验银！……我收了是想稳住他，我一分钱没花！"},
+   {q:"问秦白术：毒发比枪早——你是说，开枪时老周已经……？", who:"qin", a:"我只是说可能。要么已死，要么濒死。这句话说出口，我是要担干系的。"},
+   {q:"问林晚星：名单上有你我的名字——你还速记了别的吗？", who:"lin", a:"就这一句。我当时以为是报上的名单……现在不敢想了。"}
+  ],
+  lin:[
+   {q:"问霍山：密电说「慎查勿惊」，你查出什么了吗？", who:"huoshan", a:"没有。半个月，一无所获。黄雀藏得比我想的深。"},
+   {q:"问石敢当：掌印缺食指压痕，意味着什么？", who:"shi", a:"要么那人没食指，要么……他根本没扶稳。慌的人，才会扶不稳。"},
+   {q:"问马三爷：字条是左手写的，三爷你写字用哪只手？", who:"ma", a:"右手！大字不识几个，右手！全队谁用左手，你们自己心里有数！"}
+  ],
+  qin:[
+   {q:"问沈青梧：你到底是什么人？", who:"shen", a:"现在不能说。天亮之后，若我还活着，会给大家一个交代。"},
+   {q:"问马三爷：药包纸为什么在井边铁盒里？谁的脚印通水井？", who:"ma", a:"有人栽赃！防滑钉鞋印……马帮人才穿钉鞋，这分明是往我身上引！"},
+   {q:"问霍山：钥匙没丢，铁匣却开了——还有别的开法吗？", who:"huoshan", a:"拓钥匙模。或者……铁匣那晚根本没锁。"}
+  ],
+  shi:[
+   {q:"问沈青梧：铜纽扣上的「黄」字，你怎么看？", who:"shen", a:"西北军旧物加一个「黄」字。黄雀的黄。有人故意留给我捡，也说不定。"},
+   {q:"问林晚星：老周借蜡纸当晚，你刻的标语是什么？", who:"lin", a:"「庆祝三军会师」。……那筒蜡纸，从昨晚起没人动过吧？"},
+   {q:"问马三爷：你说鹰嘴崖是绝地，详细讲讲。", who:"ma", a:"一线天，两侧是悬崖，进去一万人也展不开。谁把队伍往那儿带，谁就是要红军的命！"}
+  ],
+  ma:[
+   {q:"问秦白术：马钱子碱，中了多久发作？", who:"qin", a:"极少量，半个时辰内。甜腥气散不掉。……你问这个做什么？"},
+   {q:"问沈青梧：你的名单和老周电文里那份，什么关系？", who:"shen", a:"副件与正件。正件若落到黄雀手里，整个西北的地下网就完了。"},
+   {q:"问霍山：若黄雀就在屋里，怎么钓他出来？", who:"huoshan", a:"让他以为他赢了。……老周也许，也是这么想的。"}
+  ],
+  shen:[
+   {q:"问霍山：队长心里可有黄雀的人选？", who:"huoshan", a:"有嫌疑的我不说，没证据。今晚谁都别单独行动。"},
+   {q:"问马三爷：袖口缝黄雀补丁的人，你今晚见过几个？", who:"ma", a:"就那个皮货商！……你们老盯着我袖口看什么？！"},
+   {q:"问秦白术：若一个人自知必死，他会怎么做？", who:"qin", a:"会把最重要的事安排好。遗书、信物、后路。……老周的手，抖了三天了。"}
+  ]
+ },
+ 3:{
+  huoshan:[
+   {q:"问林晚星：蜡纸筒现在何处？", who:"lin", a:"我房里，和油印机放在一起。……要不，现在就去看标语背面？"},
+   {q:"问石敢当：从看见人影到枪响，隔了多久？", who:"shi", a:"……一袋烟不到。（他低下了头）别问了。"},
+   {q:"问马三爷：「最不可疑之处」，三爷觉得是哪儿？", who:"ma", a:"井里！纸片上不写着「藏于井」吗？！"}
+  ],
+  lin:[
+   {q:"问霍山：若字条不是左手人写的呢？", who:"huoshan", a:"那就是有人想让咱们以为是左手人写的。……好狠的心机。"},
+   {q:"问秦白术：老周三天前就知道会死？", who:"qin", a:"遗书落款是三日前。他把每一步都安排好了，包括……自己的死法。"},
+   {q:"问沈青梧：「最不可疑之处」，你觉得是哪儿？", who:"shen", a:"天天见得着、谁也不防的地方。标语、快报、墙上。"}
+  ],
+  qin:[
+   {q:"问马三爷：三日前，是谁进过我的药房东间？", who:"ma", a:"我、我去拿过治马的药膏！可我碰的是外间的柜子！"},
+   {q:"问石敢当：枪响那晚，你从后窗翻进去过，对不对？", who:"shi", a:"……是。（他沉默良久）但我没有杀他。复盘时，我会把一切说清楚。"},
+   {q:"问林晚星：老周也会速记符号？", who:"lin", a:"机要参谋都会。……等等，速记符号……蜡纸……我明白了！"}
+  ],
+  shi:[
+   {q:"问马三爷：皮货商还说过什么？", who:"ma", a:"他说「事成之后，鹰嘴崖接应」。就这一句。三爷我虽收了钱，天地良心——"},
+   {q:"问沈青梧：黄雀名单上有几个代号？", who:"shen", a:"副件是七个联络点的代号。正件上……还有潜伏者的名字。"},
+   {q:"问林晚星：速记本比对，还有别的发现吗？", who:"lin", a:"顿挫习惯是左手不假，但起笔的钩……像是故意写出来的「左手字」。"}
+  ],
+  ma:[
+   {q:"问霍山：若黄雀今夜把假情报送出去，会怎样？", who:"huoshan", a:"十万将士走绝地。……所以送信那纸条，每个人都得想清楚了再写。"},
+   {q:"问秦白术：老周胃里的甜腥气，是什么药的味儿？", who:"qin", a:"只有马钱子碱。我丢的那瓶。……偷药的人，就是下毒的人。"},
+   {q:"问沈青梧：正件不在铁匣、不在井里，会在哪儿？", who:"shen", a:"老周20点借了蜡纸。沈某只能说到这儿了。"}
+  ],
+  shen:[
+   {q:"问霍山：老周脖子上的钥匙，是真是假？", who:"huoshan", a:"真的假不了。但若电文压根不在铁匣里，钥匙真假，还重要吗？"},
+   {q:"问马三爷：井边铁盒，除了你还有谁知道？", who:"ma", a:"没人知道！所以动土的人……要么瞎猫碰死耗子，要么，是想让我以为有人盯上我了。"},
+   {q:"问林晚星：标语明早要贴去哪？", who:"lin", a:"会宁城门的方向。……老周借蜡纸那晚，笑了一下。我现在才想起来。"}
+  ]
+ }
+};
+
+/* ---------- 幕间 DM 旁白 ---------- */
+DATA.actDm = {
+ 1:["午夜那声枪响，把所有人都惊醒了。",
+    "东厢房的门虚掩着。老周躺在冷炕上，胸口的血已经凝住了。铁匣大开，里面空空如也。他右手攥着半截烧焦的纸。",
+    "门窗完好，窗户从里面闩着。门外大雪封山，驿站的马一匹不少。",
+    "天亮之前，谁也不许离开驿站。第一轮搜证，开始。"],
+ 2:["雪下得更大了，把院子里的脚印一层层盖住。",
+    "秦白术提出了复检——有些东西，第一次验尸时被忽略了。",
+    "后山的方向黑得像墨。谁也不知道，老君庙今夜有没有人点灯。",
+    "第二轮搜证开始。这一轮，你可以选择把一张线索私藏起来——只有你自己知道。"],
+ 3:["离天亮只剩两个时辰了。",
+    "接应部队的马蹄声，仿佛已经在三十里外响起。",
+    "老周的遗书从炕洞里被找了出来——他三日前就写好了一切。",
+    "最后的搜证。之后，就是指认。"],
+ letter:["DM展开一张皱巴巴的军用地图：「接应部队将在天亮前抵达驿站外五里。」",
+    "「他们需要知道：会师地点是否安全。每个人写一句不超过十五个字的密信，我替你们送出去。」",
+    "油灯下，每个人都领了纸条。你注意到：霍山写了很久；林晚星咬着笔杆；马三爷把纸条叠了三道；沈青梧的笔尖悬了很久才落下。",
+    "DM收走了所有纸条，只说了一句：「今夜，送出密信的共六人。」内容，无人知晓。",
+    "轮到你写了。写什么都行——可真，可假。"]
+};
+
+/* ---------- 真相复盘：毒→枪→黄雀→电文下落 ---------- */
+DATA.reveals = [
+ {title:"第一层真相", sub:"毒",
+  dm:["秦白术的复检结论摆在桌上：马钱子碱中毒，毒发在23点前后——比枪声早。",
+      "遗书摊开：「余自知时日无多，黄雀已盯上余。」",
+      "真相的第一层：老周不是被枪打死的。毒药，是他自己服下的。"],
+  mono:{who:"qin", text:"他19点来找我要安眠药时，手一直在抖。我以为是失眠……原来他那时已经决定了。他连自己的死，都要用来做局。"}},
+ {title:"第二层真相", sub:"枪",
+  dm:["23点40分，巡逻归来的石敢当从后窗翻进东厢房——他看见的，是已经服毒濒死的老周。",
+      "老周在最后一刻向他坦白了一切，只求一件事：补一枪，伪造成他杀。因为只有「内讧」或「敌特灭口」，才能让黄雀放松警惕，去取那份根本不在铁匣里的电文。",
+      "石敢当含泪开枪，随后翻窗、吹灯、重新扣上窗闩。窗台的掌印缺食指压痕——不是因为没有食指，是握枪的手抖得扶不稳窗棂。",
+      "石敢当不是凶手。他是完成老周遗愿的人。"],
+  mono:{who:"shi", text:"我这辈子开过几百枪，只有这一枪，是哭着开的。……还有，遗书的背面写着：我弟弟不是叛徒——「敢当同志之弟事，组织早已查明，非叛，系被俘后假降，已归队。」老周到死，都替我留着这句话。"}},
+ {title:"第三层真相", sub:"黄雀",
+  dm:["潜伏者「黄雀」——马三爷。",
+      "三个月前他被西北行营策反：弟弟被扣押为人质。代号黄雀，袖口里侧缝着黄雀补丁。",
+      "十块大洋是黄雀的活动经费，咬齿验银是江湖记账的规矩；厨房到水井的防滑钉鞋印是他的——他撬开自己埋的铁盒，把毒药包装纸和字条塞进去再「报失」，自导自演。",
+      "他主动向老周「献计」鹰嘴崖栈道，是要把十万红军引进绝地。他偷了马钱子碱，本欲毒杀老周夺取电文。",
+      "老周察觉后，将计就计——先一步服毒，让黄雀的毒，失去了意义。他剧本里那句「收钱想稳住对方」，是准备败露时的脱罪剧本。"],
+  mono:{who:"ma", text:"我弟弟在他们手里……我没办法……红军待我不薄，买卖公平，说话算数，可那是我亲弟弟啊……（他瘫坐在雪地里，一夜白了头。）"}},
+ {title:"第四层真相", sub:"电文下落",
+  dm:["铁匣里从来没有电文。老周脖子上的钥匙，本来就是一枚闲子。",
+      "20点，他借来林晚星的蜡纸和铁笔，把整份电文——敌军布防图、备用会师方案、黄雀名单——用速记符号，刻进了宣传队的蜡纸筒。",
+      "「名单已分藏于最不可疑之处。」",
+      "明天要贴出去的那条标语——「庆祝三军会师」——的背面，就是全部电文。",
+      "电文从未离开驿站，也从未被敌人染指。"],
+  mono:{who:"lin", text:"那筒蜡纸，比我的命还重……原来老周把比命还重的东西，托付给了它。天亮以后，我要亲手把这条标语贴出去——贴到会宁城头。"}}
+];
+
+/* ---------- 红色彩蛋 ---------- */
+DATA.egg = {
+ lines:[
+  "老周没有留下姓名。",
+  "长征路上，像这样的「老周」有两千多人——中央红军出发时八万六千人，抵达会宁时只剩七千。",
+  "1936年10月22日，红一、红二、红四方面军在会宁、将台堡胜利会师。那盏油灯熄灭的地方，三十里外的城头，灯真的亮了。",
+  "今天，2026年10月22日，九十年过去了。",
+  "我们现在坐的这间屋子里，也有灯。",
+  "灯一直在。"
+ ],
+ final:"雪落无声，灯火会宁。我们替他们，看到了会师。"
+};
+</script>
+<script>
+/* =====================================================================
+   引擎层：状态机 / 存档 / 雪花 / 音效 / 打字机
+   ===================================================================== */
+var SAVE_KEY = "denghuo_huining_save_v1";
+var S = null;
+var ORDER = ["huoshan","lin","qin","shi","ma","shen"]; // 固定出场序
+
+function fresh(){ return {
+  scene:"title", player:null, round:0,
+  clues:[], hidden:[], letter:"", letterDone:false,
+  votes:{q1:null,q2:null,q3:null},
+  settle:null, revealIdx:0
+};}
+
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+function hasSave(){ try{ return !!localStorage.getItem(SAVE_KEY); }catch(e){ return false; } }
+function loadSave(){ try{ var d=JSON.parse(localStorage.getItem(SAVE_KEY)); if(d&&d.scene){S=d; return true;} }catch(e){} return false; }
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+
+function go(scene){
+  S.scene=scene; save(); render(); window.scrollTo(0,0);
+  if(AC.on){
+    AC.titleAmbience(); // 标题页灯芯氛围（内部自判 scene）
+    if(["actdm","search","discuss","letter","vote"].indexOf(scene)>=0) AC.sfx.steps(2); // 雪夜换场脚步
+  }
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function me(){ return DATA.chars[S.player]; }
+function npcs(){ return ORDER.filter(function(c){return c!==S.player;}); }
+function cname(id){ return DATA.chars[id].name; }
+function hasClue(id){ return S.clues.indexOf(id)>=0; }
+function isHidden(id){ return S.hidden.indexOf(id)>=0; }
+
+/* ---------- 雪花 ---------- */
+(function(){
+  var cv=document.getElementById("snow"), ctx=cv.getContext("2d"), flakes=[];
+  function rs(){ cv.width=innerWidth; cv.height=innerHeight; }
+  rs(); addEventListener("resize", rs);
+  for(var i=0;i<90;i++) flakes.push({x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+    r:.6+Math.random()*1.9, v:.3+Math.random()*.9, w:Math.random()*2*Math.PI});
+  (function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.fillStyle="rgba(255,255,255,.75)";
+    for(var i=0;i<flakes.length;i++){ var f=flakes[i];
+      f.y+=f.v; f.w+=.01; f.x+=Math.sin(f.w)*.4;
+      if(f.y>cv.height+4){ f.y=-4; f.x=Math.random()*cv.width; }
+      ctx.globalAlpha=.25+f.r*.28;
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,7); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    requestAnimationFrame(tick);
+  })();
+})();
+
+/* =====================================================================
+   音频系统：全部 WebAudio 程序合成（无外部文件）
+   结构：音源 → bgmBus / sfxBus / windGain → master → 压限器 → 输出
+   ===================================================================== */
+var NOTES={D2:73.42,A2:110.00,D3:146.83,F3:174.61,G3:196.00,A3:220.00,
+ C4:261.63,D4:293.66,E4:329.63,F4:349.23,Fs4:369.99,G4:392.00,A4:440.00,
+ B4:493.88,C5:523.25,D5:587.33,E5:659.26,D6:1174.66};
+/* 48秒无缝循环 · D羽调式（D F G A C）慢速旋律碎片 + 高音泛音"号角"点缀 */
+var BGM_LOOP=48;
+var BGM_SOMBER=[
+ [0,"D4",4.5,.11],[6,"F4",3.5,.09],[11,"G4",4,.095],[17,"A3",4,.085],
+ [22,"C4",4,.09],[28,"A4",4.5,.085],[34,"G4",3.5,.085],[39,"F4",4,.09],[44,"D4",4.5,.11],
+ [8,"D6",3,.028],[36,"D6",3,.024]
+];
+/* 彩蛋明亮变体：D宫/大调五声感（D E F# A B），高八度和声在播放时叠加 */
+var BGM_BRIGHT=[
+ [0,"D4",4.5,.12],[5,"E4",3.5,.10],[10,"Fs4",4,.10],[16,"A4",4,.095],
+ [21,"B4",4,.10],[27,"D5",4.5,.10],[33,"A4",3.5,.09],[38,"Fs4",4,.095],[43,"D5",5,.12],
+ [8,"D6",3,.032],[30,"E5",3,.05],[36,"D6",3,.028]
+];
+
+var AC={ // AudioCore
+ ctx:null, on:false, mood:"somber", bgmLevel:.30,
+ master:null, comp:null, bgmBus:null, sfxBus:null, windGain:null, droneFilter:null, melFilter:null,
+ _noiseBuf:null, _schedTimer:null, _startTime:0, _scheduled:{}, _titleTimer:null,
+ prefs:{bgm:true, sfx:true, vol:.9},
+ PREF_KEY:"denghuo_audio_v1",
+
+ loadPrefs:function(){ try{ var p=JSON.parse(localStorage.getItem(this.PREF_KEY)); if(p){ delete p.voice; for(var k in p) this.prefs[k]=p[k]; } }catch(e){} },
+ savePrefs:function(){ try{ localStorage.setItem(this.PREF_KEY, JSON.stringify(this.prefs)); }catch(e){} },
+
+ /* 首次用户手势解锁（浏览器自动播放策略） */
+ unlock:function(){
+   if(this.on){ if(this.ctx&&this.ctx.resume) try{this.ctx.resume();}catch(e){} return; }
+   var Tor=(typeof window!=="undefined")&&(window.AudioContext||window.webkitAudioContext);
+   if(!Tor) return;
+   try{
+     var c=this.ctx=new Tor();
+     this.comp=c.createDynamicsCompressor(); // 压限防爆音
+     this.comp.threshold.value=-16; this.comp.knee.value=18; this.comp.ratio.value=9;
+     this.comp.attack.value=.003; this.comp.release.value=.25;
+     this.master=c.createGain(); this.master.gain.value=this.prefs.vol;
+     this.master.connect(this.comp); this.comp.connect(c.destination);
+     this.bgmBus=c.createGain(); this.bgmBus.connect(this.master);
+     this.sfxBus=c.createGain(); this.sfxBus.gain.value=this.prefs.sfx?1:0; this.sfxBus.connect(this.master);
+     this.applyBgmGain(2);
+     this.startWind(); this.startDrone(); this.startScheduler();
+     if(c.resume) c.resume();
+     this.on=true;
+     toast("🔊 声音已开启");
+     this.titleAmbience();
+   }catch(e){}
+ },
+ applyBgmGain:function(tau){
+   if(!this.bgmBus) return;
+   var v=this.prefs.bgm?this.bgmLevel:0;
+   this.bgmBus.gain.setTargetAtTime(v, this.ctx.currentTime, tau||.2);
+ },
+ setMood:function(m){
+   this.mood=m;
+   if(this.droneFilter&&this.ctx){
+     this.droneFilter.frequency.setTargetAtTime(m==="bright"?980:430, this.ctx.currentTime, 1.5);
+   }
+ },
+ noiseBuf:function(){
+   var c=this.ctx;
+   if(!this._noiseBuf){
+     var len=c.sampleRate*2, b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0);
+     for(var i=0;i<len;i++) d[i]=Math.random()*2-1;
+     this._noiseBuf=b;
+   }
+   return this._noiseBuf;
+ },
+ /* 环境风声层：低通噪声 + 慢 LFO 起伏 */
+ startWind:function(){
+   var c=this.ctx;
+   var src=c.createBufferSource(); src.buffer=this.noiseBuf(); src.loop=true;
+   var f=c.createBiquadFilter(); f.type="lowpass"; f.frequency.value=360; f.Q.value=.7;
+   this.windGain=c.createGain(); this.windGain.gain.value=0;
+   var lfo=c.createOscillator(); lfo.frequency.value=.11;
+   var lg=c.createGain(); lg.gain.value=.045;
+   lfo.connect(lg); lg.connect(this.windGain.gain);
+   src.connect(f); f.connect(this.windGain); this.windGain.connect(this.master);
+   src.start(); lfo.start();
+   this.windGain.gain.setTargetAtTime(.11, c.currentTime, 2.5);
+ },
+ /* BGM 低音 drone：锯齿波×2（D2/A2 微失谐）+ 正弦 D3，低通 + 慢 LFO，弦乐 pad 感 */
+ startDrone:function(){
+   var c=this.ctx;
+   var f=this.droneFilter=c.createBiquadFilter(); f.type="lowpass"; f.frequency.value=430; f.Q.value=1.4;
+   var lfo=c.createOscillator(); lfo.frequency.value=.055;
+   var lg=c.createGain(); lg.gain.value=110;
+   lfo.connect(lg); lg.connect(f.frequency); lfo.start();
+   var g=c.createGain(); g.gain.value=0; g.gain.setTargetAtTime(.9, c.currentTime, 3);
+   var parts=[["sawtooth",NOTES.D2,0,.5],["sawtooth",NOTES.A2,5,.32],["sine",NOTES.D3,-4,.28]];
+   for(var i=0;i<parts.length;i++){
+     var o=c.createOscillator(); o.type=parts[i][0]; o.frequency.value=parts[i][1]; o.detune.value=parts[i][2];
+     var og=c.createGain(); og.gain.value=parts[i][3];
+     o.connect(og); og.connect(f); o.start();
+   }
+   f.connect(g); g.connect(this.bgmBus);
+   this.melFilter=c.createBiquadFilter(); this.melFilter.type="lowpass"; this.melFilter.frequency.value=2200;
+   this.melFilter.connect(this.bgmBus);
+ },
+ /* 单音：三角波主体 + 高八度正弦（彩蛋变体更亮），慢起音包络 */
+ note:function(freq,t,dur,gain,bright){
+   var c=this.ctx;
+   var o1=c.createOscillator(); o1.type="triangle"; o1.frequency.value=freq;
+   var o2=c.createOscillator(); o2.type="sine"; o2.frequency.value=freq*2;
+   var vib=c.createOscillator(); vib.frequency.value=4.5;
+   var vg=c.createGain(); vg.gain.value=freq*.004;
+   vib.connect(vg); vg.connect(o1.frequency);
+   var g=c.createGain();
+   g.gain.setValueAtTime(.0001,t);
+   g.gain.exponentialRampToValueAtTime(gain,t+.8);
+   g.gain.setValueAtTime(gain*.85,t+dur*.55);
+   g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+   var g2=c.createGain(); g2.gain.value=bright?.30:.10;
+   o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(this.melFilter);
+   o1.start(t); o2.start(t); vib.start(t);
+   o1.stop(t+dur+.1); o2.stop(t+dur+.1); vib.stop(t+dur+.1);
+ },
+ /* 前瞻调度器：每 250ms 检查循环窗口，事件按 cycle:i 去重 → 48s 无缝循环 */
+ startScheduler:function(){
+   var self=this; this._startTime=this.ctx.currentTime+.15; this._scheduled={};
+   this._schedTimer=setInterval(function(){ self.schedTick(); },250);
+   this.schedTick();
+ },
+ schedTick:function(){
+   if(!this.ctx) return;
+   var rel=this.ctx.currentTime-this._startTime;
+   if(rel<0) return;
+   var cyc=Math.floor(rel/BGM_LOOP), pos=rel-cyc*BGM_LOOP;
+   var mel=this.mood==="bright"?BGM_BRIGHT:BGM_SOMBER;
+   for(var i=0;i<mel.length;i++){
+     var ev=mel[i], key=cyc+":"+i;
+     if(ev[0]>=pos-.01 && ev[0]<pos+.30 && !this._scheduled[key]){
+       this._scheduled[key]=1;
+       this.note(NOTES[ev[1]], this._startTime+cyc*BGM_LOOP+ev[0], ev[2], ev[3], this.mood==="bright");
+     }
+   }
+ },
+ /* 标题页氛围：随机间隔的灯芯噼啪 */
+ titleAmbience:function(){
+   var self=this;
+   if(this._titleTimer){ clearTimeout(this._titleTimer); this._titleTimer=null; }
+   if(!this.on || !S || S.scene!=="title") return;
+   (function tick(){
+     if(!S||S.scene!=="title"||!self.on) return;
+     self.sfx.crackle(2+Math.floor(Math.random()*3));
+     self._titleTimer=setTimeout(tick, 1800+Math.random()*2600);
+   })();
+ },
+ ok2:function(){ return this.on && this.prefs.sfx && this.ctx; }
+};
+
+/* ---------- 互动音效：每个独立合成函数，便于调参 ---------- */
+AC.sfx={
+ /* 纸张展开：带通噪声快速上扫 */
+ paper:function(){ if(!AC.ok2())return; var c=AC.ctx,t=c.currentTime;
+   var n=c.createBufferSource(); n.buffer=AC.noiseBuf();
+   var f=c.createBiquadFilter(); f.type="bandpass"; f.Q.value=1.3;
+   f.frequency.setValueAtTime(800,t); f.frequency.exponentialRampToValueAtTime(4600,t+.2);
+   var g=c.createGain(); g.gain.setValueAtTime(.0001,t);
+   g.gain.exponentialRampToValueAtTime(.24,t+.03); g.gain.exponentialRampToValueAtTime(.0001,t+.3);
+   n.connect(f); f.connect(g); g.connect(AC.sfxBus); n.start(t); n.stop(t+.35);
+ },
+ /* 木门吱呀：锯齿波下滑 + 频率抖动 */
+ door:function(){ if(!AC.ok2())return; var c=AC.ctx,t=c.currentTime;
+   var o=c.createOscillator(); o.type="sawtooth";
+   o.frequency.setValueAtTime(170,t); o.frequency.exponentialRampToValueAtTime(85,t+.65);
+   var lfo=c.createOscillator(); lfo.frequency.value=11;
+   var lg=c.createGain(); lg.gain.value=26; lfo.connect(lg); lg.connect(o.frequency);
+   var f=c.createBiquadFilter(); f.type="bandpass"; f.frequency.value=520; f.Q.value=3.5;
+   var g=c.createGain(); g.gain.setValueAtTime(.0001,t);
+   g.gain.exponentialRampToValueAtTime(.16,t+.09);
+   g.gain.setValueAtTime(.13,t+.4); g.gain.exponentialRampToValueAtTime(.0001,t+.72);
+   o.connect(f); f.connect(g); g.connect(AC.sfxBus);
+   o.start(t); lfo.start(t); o.stop(t+.78); lfo.stop(t+.78);
+ },
+ /* 翻箱倒柜：数次低通噪声闷击 */
+ rummage:function(){ if(!AC.ok2())return; var c=AC.ctx,t0=c.currentTime;
+   for(var i=0;i<4;i++){ var t=t0+i*(.11+Math.random()*.05);
+     var n=c.createBufferSource(); n.buffer=AC.noiseBuf();
+     var f=c.createBiquadFilter(); f.type="lowpass"; f.frequency.value=480+Math.random()*800;
+     var g=c.createGain(); g.gain.setValueAtTime(.0001,t);
+     g.gain.exponentialRampToValueAtTime(.14+Math.random()*.1,t+.015);
+     g.gain.exponentialRampToValueAtTime(.0001,t+.08+Math.random()*.05);
+     n.connect(f); f.connect(g); g.connect(AC.sfxBus); n.start(t); n.stop(t+.16);
+   }
+ },
+ /* 雪地脚步：嘎吱碎裂声 ×n */
+ steps:function(n){ if(!AC.ok2())return; var c=AC.ctx,t0=c.currentTime; n=n||2;
+   for(var i=0;i<n;i++){ var t=t0+i*.36;
+     var src=c.createBufferSource(); src.buffer=AC.noiseBuf();
+     var f=c.createBiquadFilter(); f.type="bandpass"; f.frequency.value=300+Math.random()*120; f.Q.value=1.8;
+     var g=c.createGain(); g.gain.setValueAtTime(.0001,t);
+     g.gain.exponentialRampToValueAtTime(.26,t+.02);
+     g.gain.exponentialRampToValueAtTime(.05,t+.09);
+     g.gain.exponentialRampToValueAtTime(.0001,t+.15);
+     src.connect(f); f.connect(g); g.connect(AC.sfxBus); src.start(t); src.stop(t+.2);
+   }
+ },
+ /* 灯芯噼啪：极短高频爆点 */
+ crackle:function(n){ if(!AC.ok2())return; var c=AC.ctx,t0=c.currentTime; n=n||4;
+   for(var i=0;i<n;i++){ var t=t0+Math.random()*.55;
+     var src=c.createBufferSource(); src.buffer=AC.noiseBuf();
+     var f=c.createBiquadFilter(); f.type="highpass"; f.frequency.value=2600+Math.random()*1500;
+     var g=c.createGain(); g.gain.setValueAtTime(.0001,t);
+     g.gain.exponentialRampToValueAtTime(.05+Math.random()*.08,t+.004);
+     g.gain.exponentialRampToValueAtTime(.0001,t+.02+Math.random()*.02);
+     src.connect(f); f.connect(g); g.connect(AC.sfxBus); src.start(t); src.stop(t+.06);
+   }
+ },
+ /* 低沉枪声：正弦骤降 + 低通噪声轰击 */
+ gun:function(){ if(!AC.ok2())return; var c=AC.ctx,t=c.currentTime;
+   var o=c.createOscillator(); o.type="sine";
+   o.frequency.setValueAtTime(160,t); o.frequency.exponentialRampToValueAtTime(42,t+.35);
+   var g=c.createGain(); g.gain.setValueAtTime(.0001,t);
+   g.gain.exponentialRampToValueAtTime(.55,t+.008);
+   g.gain.exponentialRampToValueAtTime(.0001,t+.5);
+   o.connect(g); g.connect(AC.sfxBus); o.start(t); o.stop(t+.55);
+   var n=c.createBufferSource(); n.buffer=AC.noiseBuf();
+   var f=c.createBiquadFilter(); f.type="lowpass"; f.frequency.value=750;
+   var g2=c.createGain(); g2.gain.setValueAtTime(.0001,t);
+   g2.gain.exponentialRampToValueAtTime(.38,t+.006);
+   g2.gain.exponentialRampToValueAtTime(.0001,t+.28);
+   n.connect(f); f.connect(g2); g2.connect(AC.sfxBus); n.start(t); n.stop(t+.32);
+ },
+ /* 翻页/落座：短纸声 + 低频轻顿（NPC发言时） */
+ page:function(){ if(!AC.ok2())return; var c=AC.ctx,t=c.currentTime;
+   var n=c.createBufferSource(); n.buffer=AC.noiseBuf();
+   var f=c.createBiquadFilter(); f.type="bandpass"; f.Q.value=1.2;
+   f.frequency.setValueAtTime(1200,t); f.frequency.exponentialRampToValueAtTime(3000,t+.12);
+   var g=c.createGain(); g.gain.setValueAtTime(.0001,t);
+   g.gain.exponentialRampToValueAtTime(.09,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+.16);
+   n.connect(f); f.connect(g); g.connect(AC.sfxBus); n.start(t); n.stop(t+.2);
+   var o=c.createOscillator(); o.type="sine"; o.frequency.value=95;
+   var g2=c.createGain(); g2.gain.setValueAtTime(.0001,t+.05);
+   g2.gain.exponentialRampToValueAtTime(.13,t+.065); g2.gain.exponentialRampToValueAtTime(.0001,t+.2);
+   o.connect(g2); g2.connect(AC.sfxBus); o.start(t+.05); o.stop(t+.25);
+ }
+};
+
+
+
+/* ---------- 音量面板 ---------- */
+var AudioUI={
+ panel:function(){
+   var p=AC.prefs;
+   function row(label,key){
+     return '<div class="vol-row"><span>'+label+'</span>'+
+      '<button class="opt-btn sw'+(p[key]?" on":"")+'" onclick="AudioUI.toggle(\''+key+'\')">'+(p[key]?"开":"关")+'</button></div>';
+   }
+   UI.open('<h3>🔊 音频设置</h3>'+
+    row("🎵 背景音（风声+BGM）","bgm")+
+    row("🔔 互动音效","sfx")+
+    '<div class="vol-row"><span>🔉 主音量</span>'+
+    '<input type="range" id="volslider" min="0" max="100" value="'+Math.round(p.vol*100)+'" oninput="AudioUI.setVol(this.value)"></div>'+
+    '<p class="dim small">声音默认开启，已于首次点击时启动。全部声音由 WebAudio 实时合成，无任何外部音频文件。</p>'+
+    '<button class="btn ghost" onclick="UI.close()">关闭</button>');
+ },
+ toggle:function(key){
+   AC.prefs[key]=!AC.prefs[key]; AC.savePrefs();
+   if(key==="bgm") AC.applyBgmGain(.2);
+   if(key==="sfx"&&AC.sfxBus) AC.sfxBus.gain.setTargetAtTime(AC.prefs.sfx?1:0, AC.ctx.currentTime, .1);
+   this.panel();
+ },
+ setVol:function(v){
+   AC.prefs.vol=v/100; AC.savePrefs();
+   if(AC.master&&AC.ctx) AC.master.gain.setTargetAtTime(AC.prefs.vol, AC.ctx.currentTime, .05);
+ }
+};
+
+/* ---------- 提示条 ---------- */
+function toast(msg){
+  var el=document.getElementById("toast"); if(!el) return;
+  el.textContent=msg; el.className="show";
+  setTimeout(function(){ el.className=""; },2000);
+}
+
+/* 浏览器自动播放策略：首次任意点击解锁音频 */
+if(typeof document!=="undefined"&&document.addEventListener){
+  document.addEventListener("click",function(){ AC.unlock(); },{once:true});
+}
+AC.loadPrefs();
+
+/* ---------- 打字机 ---------- */
+var TYPE_MS=34; // 打字节奏（毫秒/字，可调）
+var Typer={timer:null,skipAll:false,
+ run:function(el, paras, done){
+   var pi=0, ci=0, self=this; this.skipAll=false;
+   el.innerHTML="";
+   var cur=null;
+   function newP(){ cur=document.createElement("p"); el.appendChild(cur); }
+   function step(){
+     if(self.skipAll){
+       el.innerHTML=paras.map(function(p){return "<p>"+esc(p)+"</p>";}).join("");
+       cleanup(); done&&done(); return;
+     }
+     if(pi>=paras.length){ cleanup(); done&&done(); return; }
+     if(ci===0) newP();
+     cur.textContent=paras[pi].slice(0,++ci);
+     cur.classList.add("cursor");
+     if(ci>=paras[pi].length){ cur.classList.remove("cursor"); pi++; ci=0; }
+     self.timer=setTimeout(step, pi===0&&ci===1?300:TYPE_MS);
+   }
+   function cleanup(){ if(self.timer){clearTimeout(self.timer); self.timer=null;} }
+   step();
+   this.abort=function(){ self.skipAll=true; if(self.timer){clearTimeout(self.timer);} step(); };
+ }
+};
+
+/* ---------- HUD ---------- */
+function hud(show){
+  document.getElementById("hud").style.display = show?"block":"none";
+  document.getElementById("sndbtn").style.display = "block";
+}
+
+/* ---------- 遮层面板 ---------- */
+var UI={
+ close:function(){ document.getElementById("ovl").style.display="none"; document.getElementById("ovl").innerHTML=""; },
+ open:function(html){ var o=document.getElementById("ovl"); o.style.display="block";
+   o.innerHTML='<div class="overlay" onclick="if(event.target===this)UI.close()"><div class="panel">'+html+'</div></div>'; },
+ memo:function(){
+   var c=me();
+   var h='<h3>📖 '+c.name+' 的随身手记</h3><div class="tabs">'+
+     '<div class="tab on" id="tab-m" onclick="UI.tab(\'m\')">你的记忆</div>'+
+     '<div class="tab" id="tab-s" onclick="UI.tab(\'s\')">你的秘密</div>'+
+     '<div class="tab" id="tab-t" onclick="UI.tab(\'t\')">个人任务</div></div><div id="tabbody"></div>'+
+     '<button class="btn ghost" onclick="UI.close()">收起手记</button>';
+   this.open(h); this.tab("m");
+ },
+ tab:function(k){
+   var c=me(), b=document.getElementById("tabbody");
+   ["m","s","t"].forEach(function(x){ document.getElementById("tab-"+x).className="tab"+(x===k?" on":""); });
+   if(k==="m") b.innerHTML=c.mem.map(function(t){return '<div class="memo-item">'+esc(t)+'</div>';}).join("");
+   if(k==="s") b.innerHTML=c.sec.map(function(t){return '<div class="memo-item">'+esc(t)+'</div>';}).join("");
+   if(k==="t") b.innerHTML=c.tasks.map(function(t){
+     var done=taskLiveDone(t.id);
+     return '<div class="task-item"><span class="tick">'+(done?"☑":"☐")+'</span>'+esc(t.text)+'</div>';
+   }).join("");
+ },
+ bag:function(){
+   if(AC.on) AC.sfx.paper();
+   var h='<h3>🎒 证据袋（'+S.clues.length+'）</h3>';
+   if(!S.clues.length) h+='<p class="dim">还没有收集到线索。</p>';
+   h+=S.clues.map(function(id){ var c=DATA.clues[id];
+     return '<div class="clue-mini" onclick="UI.clue(\''+id+'\')"><b class="lampc">['+id+']</b> '+esc(c.t)+
+       (isHidden(id)?'<span class="hidetag">已私藏</span>':'')+'</div>'; }).join("");
+   h+='<button class="btn ghost" onclick="UI.close()">收起证据袋</button>';
+   this.open(h);
+ },
+ clue:function(id){ var c=DATA.clues[id];
+   if(AC.on) AC.sfx.paper();
+   this.open('<div class="clue-card"><div class="cid">'+id+'</div><div class="ct">'+esc(c.t)+'</div><div class="cx">'+esc(c.x)+'</div></div>'+
+   '<button class="btn ghost" onclick="UI.bag()">返回证据袋</button>'); },
+ save2title:function(){ save(); go("title"); }
+};
+
+/* ---------- 任务实时判定（用于手记打勾） ---------- */
+function taskLiveDone(id){
+  if(S.scene==="settle"&&S.settle){
+    for(var i=0;i<S.settle.tasks.length;i++) if(S.settle.tasks[i].id===id) return S.settle.tasks[i].done;
+  }
+  if(id==="ma2") return letterEagle();
+  return false;
+}
+
+/* ---------- 密信判定 ---------- */
+function letterEagle(){ return /鹰嘴崖|栈道|埋伏|伏击|改道/.test(S.letter); }
+function letterFake(){ return /平安|按原计划|安全|顺利|无恙/.test(S.letter); }
+function letterKey(){ return /名单|井|蜡纸|标语|电文/.test(S.letter); }
+</script>
+<script>
+/* =====================================================================
+   渲染层：场景状态机
+   ===================================================================== */
+function render(){
+  var app=document.getElementById("app");
+  var inGame=["briefing","actdm","search","discuss","letter","vote","reveal","settle"].indexOf(S.scene)>=0;
+  hud(!!S.player && inGame);
+  switch(S.scene){
+    case "title": rTitle(app); break;
+    case "intro": rNarr(app, DATA.intro, "我知道了，带我去驿站", function(){ go("rules"); }, true); break;
+    case "rules": rRules(app); break;
+    case "select": rSelect(app); break;
+    case "briefing": rBriefing(app); break;
+    case "actdm": rNarr(app, DATA.actDm[S.round], "进入"+DATA.rounds[S.round-1].name, function(){ go("search"); }); break;
+    case "search": rSearch(app); break;
+    case "discuss": rDiscuss(app); break;
+    case "letter": rNarr(app, DATA.actDm.letter, "写下我的密信", function(){ rLetterInput(app); }); break;
+    case "vote": rVote(app); break;
+    case "reveal": rReveal(app); break;
+    case "settle": rSettle(app); break;
+    case "egg": rEgg(app); break;
+  }
+}
+
+/* ---------- 1. 标题页 ---------- */
+function rTitle(app){
+  app.innerHTML='<div class="screen">'+
+   '<div class="title-wrap">'+
+     '<div class="subtitle">纪念红军长征胜利90周年 · 六人谍战情感剧本杀</div>'+
+     '<h1 class="game-title">灯火会宁</h1>'+
+     '<div class="dim">1936 · 甘肃会宁 · 老君坡驿站 · 雪夜</div>'+
+     '<div class="lamp-flame"></div>'+
+   '</div>'+
+   '<button class="btn" onclick="startNew()">🕯 点 灯 · 开 始 游 戏</button>'+
+   (hasSave()?'<button class="btn" onclick="continueGame()">📜 继续上次的雪夜（读档）</button>':'')+
+   '<p class="center dim small" style="margin-top:26px">单机沉浸版 · 你扮演1名角色，其余5名由剧本化AI扮演<br>🔊 声音默认开启（首次点击自动启动）· 右上角可调 BGM / 音效 / 音量 · 全程约20—40分钟</p>'+
+   '<hr class="hr"><p class="center dim small">凶手就在六人之中。而比找出凶手更重要的——<br>是天亮之前，找回那封关乎十万将士的电文。</p>'+
+  '</div>';
+}
+function startNew(){ AC.unlock(); AC.setMood("somber"); S=fresh(); go("intro"); }
+function continueGame(){ AC.unlock(); if(loadSave()){ if(S.scene==="title") S.scene="intro"; render(); } }
+
+/* ---------- 通用旁白页（打字机，点击跳过） ---------- */
+function rNarr(app, paras, btnText, next, isIntro){
+  app.innerHTML='<div class="screen"><div class="narr" id="narrbox" onclick="Typer.abort()"></div>'+
+   '<div class="skiptip">点击文本框可跳过打字</div><div id="narrbtn"></div></div>';
+  hud(false);
+  Typer.run(document.getElementById("narrbox"), paras, function(){
+    document.getElementById("narrbtn").innerHTML='<button class="btn" id="nb">'+esc(btnText)+'</button>';
+    document.getElementById("nb").onclick=function(){ hud(true); next(); };
+  });
+}
+
+/* ---------- 2. 玩法说明 ---------- */
+function rRules(app){
+  app.innerHTML='<div class="screen"><h2 class="center lampc">玩 法 说 明</h2><hr class="hr">'+
+   DATA.rules.map(function(r){return '<div class="memo-item">'+esc(r)+'</div>';}).join("")+
+   '<button class="btn" onclick="go(\'select\')">前往选角 →</button></div>';
+}
+
+/* ---------- 3. 选角 ---------- */
+function rSelect(app){
+  var cards=ORDER.map(function(id){ var c=DATA.chars[id];
+    return '<div class="char-card" onclick="pickChar(\''+id+'\')">'+
+     '<div class="cname">'+c.name+'</div>'+
+     '<div class="crole">'+c.role+' · '+c.gender+' · '+c.age+'岁</div>'+
+     '<div class="cdesc">'+c.tag+'</div></div>'; }).join("");
+  app.innerHTML='<div class="screen"><h2 class="center lampc">选 择 你 的 角 色</h2>'+
+   '<p class="center dim">驿站里今夜有六个人。你，是谁？</p><div class="char-grid">'+cards+'</div></div>';
+}
+function pickChar(id){
+  S.player=id; save();
+  var c=DATA.chars[id];
+  var app=document.getElementById("app");
+  app.innerHTML='<div class="screen"><div class="char-card sel" style="cursor:default">'+
+   '<div class="cname" style="font-size:1.6em">'+c.name+'</div>'+
+   '<div class="crole">'+c.role+' · '+c.gender+' · '+c.age+'岁</div>'+
+   '<div class="cdesc" style="font-size:.95em">'+c.tag+'</div></div>'+
+   '<div class="narr"><span class="dm-tag">公开信息</span><p>'+esc(c.pub)+'</p></div>'+
+   '<div class="narr"><span class="dm-tag" style="background:var(--red-hi)">DM 密示 · 只给你一人</span><p>'+esc(c.dmn)+'</p></div>'+
+   '<p class="center dim small">你的【记忆】【秘密】【个人任务】已收入「随身手记」（屏幕下方📖），可随时翻看。</p>'+
+   '<button class="btn" onclick="go(\'briefing\')">翻过此页，入戏 →</button></div>';
+}
+
+/* ---------- 4. 角色本（记忆/秘密/任务速览） ---------- */
+function rBriefing(app){
+  var c=me();
+  app.innerHTML='<div class="screen"><h2 class="center lampc">'+c.name+' · 随身手记</h2>'+
+   '<p class="center dim small">以下内容只有你知道。讨论中说什么、瞒什么，由你决定。</p>'+
+   '<h3 class="lampc">【你的记忆】</h3>'+c.mem.map(function(t){return '<div class="memo-item">'+esc(t)+'</div>';}).join("")+
+   '<h3 class="red">【你的秘密】</h3>'+c.sec.map(function(t){return '<div class="memo-item">'+esc(t)+'</div>';}).join("")+
+   '<h3 class="lampc">【你的任务】</h3>'+c.tasks.map(function(t){return '<div class="task-item"><span class="tick">☐</span>'+esc(t.text)+'</div>';}).join("")+
+   '<button class="btn" onclick="S.round=1;go(\'actdm\')">第一幕 · 枪响之后 →</button></div>';
+}
+
+/* ---------- 5. 搜证 ---------- */
+var SEARCH={scene:null};
+function rSearch(app){
+  var R=DATA.rounds[S.round-1];
+  var total=0, found=0;
+  Object.keys(R.scenes).forEach(function(k){ var sc=R.scenes[k];
+    (sc.spots||[]).forEach(function(sp){ if(sp.clue){ total++; if(hasClue(sp.clue)) found++; } });
+    if(sc.roomSpots) Object.keys(sc.roomSpots).forEach(function(rk){
+      sc.roomSpots[rk].forEach(function(sp){ if(sp.clue){ total++; if(hasClue(sp.clue)) found++; } });
+    });
+  });
+  var mapSvg=
+   '<svg viewBox="0 0 360 260" style="width:100%;display:block">'+
+   '<rect x="0" y="0" width="360" height="260" fill="#0d1730"/>'+
+   '<rect x="14" y="10" width="332" height="20" class="hot" data-sc="back" id="sc-back"/><text x="180" y="24" text-anchor="middle" font-size="11">后院墙 · 老君庙方向</text>'+
+   '<rect x="238" y="46" width="106" height="72" class="hot" data-sc="east" id="sc-east"/><text x="291" y="86" text-anchor="middle" font-size="13">东厢房</text>'+
+   '<rect x="122" y="50" width="104" height="64" class="hot" data-sc="yard" id="sc-yard"/><text x="174" y="86" text-anchor="middle" font-size="12">院子·雪地</text>'+
+   '<rect x="16" y="46" width="94" height="108" class="hot" data-sc="rooms" id="sc-rooms"/><text x="63" y="96" text-anchor="middle" font-size="12">住屋排</text><text x="63" y="112" text-anchor="middle" font-size="9" fill="#c9b998">各人房间</text>'+
+   '<rect x="238" y="164" width="106" height="58" class="hot" data-sc="stable" id="sc-stable"/><text x="291" y="197" text-anchor="middle" font-size="12">马棚</text>'+
+   '<rect x="136" y="164" width="86" height="50" class="hot" data-sc="kitchen" id="sc-kitchen"/><text x="179" y="193" text-anchor="middle" font-size="12">厨房</text>'+
+   '<circle cx="70" cy="196" r="22" class="hot" data-sc="well" id="sc-well"/><text x="70" y="200" text-anchor="middle" font-size="11">水井</text>'+
+   '</svg>';
+  app.innerHTML='<div class="screen"><h2 class="center lampc">'+R.name+'</h2>'+
+   '<p class="center dim small">'+esc(R.sub)+' · 已获线索 '+found+' / '+total+'</p>'+
+   '<div class="map-box">'+mapSvg+'</div>'+
+   '<div id="scenepanel" style="margin-top:14px"><p class="center dim">点击驿站地图上的区域，开始搜查。</p></div>'+
+   '<button class="btn" id="discussBtn" onclick="tryFinishSearch()">'+
+   (found>=total?'结束搜证，进入讨论 →':'结束搜证（还有 '+(total-found)+' 条线索未找到）')+'</button></div>';
+  // 高亮含未获取线索的区域
+  Object.keys(R.scenes).forEach(function(k){
+    var sc=R.scenes[k], pending=false;
+    (sc.spots||[]).forEach(function(sp){ if(sp.clue&&!hasClue(sp.clue)) pending=true; });
+    if(sc.roomSpots) Object.keys(sc.roomSpots).forEach(function(rk){
+      sc.roomSpots[rk].forEach(function(sp){ if(sp.clue&&!hasClue(sp.clue)) pending=true; }); });
+    var el=document.getElementById("sc-"+k);
+    if(el){ el.classList.add(pending?"glow":"done");
+      el.addEventListener("click",function(){ openScene(k); }); }
+  });
+}
+function openScene(k){
+  if(AC.on){ AC.sfx.door(); if(k==="yard"||k==="back") AC.sfx.steps(2); } // 推门 + 雪地脚步
+  var R=DATA.rounds[S.round-1], sc=R.scenes[k], p=document.getElementById("scenepanel");
+  var h='<div class="narr"><span class="dm-tag">'+esc(sc.name)+'</span>';
+  (sc.spots||[]).forEach(function(sp,i){
+    if(sp.clue){ var got=hasClue(sp.clue);
+      h+='<button class="spot-btn" '+(got?'disabled':'onclick="getClue(\''+k+'\','+i+')"')+'>'+esc(sp.label)+(got?'<span class="got">✓ 已取证</span>':'')+'</button>';
+    } else h+='<p class="dim small" style="margin:8px 0">'+esc(sp.flavor)+'</p>';
+  });
+  h+='</div>';
+  if(sc.rooms){
+    h+='<div class="narr"><span class="dm-tag">住屋排 · 各人的房间</span>';
+    ORDER.forEach(function(cid){
+      if(cid===S.player){
+        var mySpots=(sc.roomSpots&&sc.roomSpots[cid])||[];
+        var myDone=mySpots.length>0&&mySpots.every(function(sp){return !sp.clue||hasClue(sp.clue);});
+        h+='<button class="spot-btn" onclick="openMyRoom()">你的房间（'+cname(cid)+'的房间）'+(myDone?'<span class="got">✓ 已搜查</span>':'')+'</button>';
+      } else {
+        var spots=(sc.roomSpots&&sc.roomSpots[cid])||[];
+        var allGot=spots.length&&spots.every(function(sp){return !sp.clue||hasClue(sp.clue);});
+        var none=spots.length===0;
+        h+='<button class="spot-btn" '+((none||allGot)?'disabled':'onclick="openRoom(\''+cid+'\')"')+'>'+cname(cid)+'的房间'+
+          (none?'<span class="got">今夜不便打扰</span>':(allGot?'<span class="got">✓ 已搜查</span>':''))+'</button>';
+      }
+    });
+    h+='</div>';
+  }
+  p.innerHTML=h;
+}
+function openMyRoom(){
+  if(AC.on) AC.sfx.door();
+  var sc=DATA.rounds[S.round-1].scenes.rooms;
+  var spots=(sc&&sc.roomSpots&&sc.roomSpots[S.player])||[];
+  var h='<div class="narr"><span class="dm-tag">你的房间</span><p class="mono">'+esc(me().room)+'</p>';
+  spots.forEach(function(sp,i){
+    if(sp.clue){ var got=hasClue(sp.clue);
+      h+='<button class="spot-btn" '+(got?'disabled':'onclick="getRoomClue(\''+S.player+'\','+i+')"')+'>'+esc(sp.label)+(got?'<span class="got">✓ 已取证</span>':'')+'</button>';
+    }
+  });
+  h+='</div>';
+  document.getElementById("scenepanel").innerHTML=h;
+}
+function openRoom(cid){
+  if(AC.on) AC.sfx.door();
+  var sc=DATA.rounds[S.round-1].scenes.rooms, spots=(sc.roomSpots&&sc.roomSpots[cid])||[];
+  var h='<div class="narr"><span class="dm-tag">'+cname(cid)+'的房间</span>';
+  spots.forEach(function(sp,i){
+    if(sp.clue){ var got=hasClue(sp.clue);
+      h+='<button class="spot-btn" '+(got?'disabled':'onclick="getRoomClue(\''+cid+'\','+i+')"')+'>'+esc(sp.label)+(got?'<span class="got">✓ 已取证</span>':'')+'</button>';
+    } else h+='<p class="dim small" style="margin:8px 0">'+esc(sp.flavor)+'</p>';
+  });
+  h+='</div>';
+  document.getElementById("scenepanel").innerHTML=h;
+}
+function getClue(scKey, idx){ gainClue(DATA.rounds[S.round-1].scenes[scKey].spots[idx].clue, false); }
+function getRoomClue(cid, idx){ gainClue(DATA.rounds[S.round-1].scenes.rooms.roomSpots[cid][idx].clue, cid===S.player); }
+
+/* 在自己房间翻出线索时的内心独白（玩家身份与线索分配解耦时的文案补偿） */
+var OWN_NOTES={
+ B7:"你亲手从枕下取出那封密电抄件，八个字又看了一遍：「队内有黄雀，慎查勿惊。」……事到如今，得让大家也看见了。",
+ B3:"你检查自己的油印机——铁笔尖上果然有不属于蜡纸的金属刮屑。谁动过你的蜡纸？你心里一紧。",
+ B5:"你从枕边摸出那枚铜纽扣。背面那个「黄」字在灯下泛着冷光——这东西，你本想再藏一藏的。",
+ C1:"你打开自己药箱的夹层，盘库单上的字刺眼：马钱子碱，三日前在库，今晨缺失。你决定，不再瞒了。",
+ C3:"你拆开自己皮箱的夹层——副件还在。事到如今，只能当众摊开。你把名单拍在了桌上。",
+ C4:"你翻开自己的速记本，逐笔比对那张字条。顿挫是左手……可这起笔的钩，不对劲。"
+};
+function gainClue(id, ownRoom){
+  if(AC.on){ AC.sfx.rummage(); setTimeout(function(){ AC.sfx.paper(); },420); } // 翻找→纸张展开
+  var c=DATA.clues[id];
+  var app=document.getElementById("app");
+  var hideBtn="";
+  if(S.round===2 && S.hidden.length<1){
+    hideBtn='<button class="btn red-btn" onclick="keepClue(\''+id+'\')">🤫 私藏这张线索（本轮限1张，只有你知道）</button>';
+  }
+  var ownNote=(ownRoom&&OWN_NOTES[id])?'<p class="mono" style="margin-top:10px">'+esc(OWN_NOTES[id])+'</p>':'';
+  var div=document.createElement("div");
+  div.innerHTML='<div class="screen"><div class="clue-card"><div class="cid">线索 '+id+'</div>'+
+   '<div class="ct">'+esc(c.t)+'</div><div class="cx">'+esc(c.x)+'</div>'+ownNote+'</div>'+hideBtn+
+   '<button class="btn" onclick="pubClue(\''+id+'\')">📣 公开宣读，收入证据袋</button></div>';
+  app.innerHTML=div.innerHTML;
+}
+function pubClue(id){ if(!hasClue(id)) S.clues.push(id); save(); rSearch(document.getElementById("app")); }
+function keepClue(id){ if(!hasClue(id)){S.clues.push(id);} if(S.hidden.indexOf(id)<0) S.hidden.push(id); save(); rSearch(document.getElementById("app")); }
+
+function nextAfterSearch(){
+  if(S.round===2 && !S.letterDone){ go("letter"); return; }
+  go("discuss");
+}
+/* 兜底：即使线索没收齐，确认后也可强制进入讨论，防止流程卡死 */
+function roundClueStat(){
+  var R=DATA.rounds[S.round-1], total=0, found=0;
+  Object.keys(R.scenes).forEach(function(k){ var sc=R.scenes[k];
+    (sc.spots||[]).forEach(function(sp){ if(sp.clue){ total++; if(hasClue(sp.clue)) found++; } });
+    if(sc.roomSpots) Object.keys(sc.roomSpots).forEach(function(rk){
+      sc.roomSpots[rk].forEach(function(sp){ if(sp.clue){ total++; if(hasClue(sp.clue)) found++; } });
+    });
+  });
+  return {total:total, found:found};
+}
+function tryFinishSearch(){
+  var st=roundClueStat(), miss=st.total-st.found;
+  if(miss>0 && typeof confirm==="function"){
+    if(!confirm("还有 "+miss+" 条线索未找到，确定提前结束搜证？\n（未找到的线索不会进入证据袋，可在复盘时听 DM 公布）")) return;
+  }
+  nextAfterSearch();
+}
+</script>
+<script>
+/* ---------- 6. 讨论 ---------- */
+var DIS=null;
+function rDiscuss(app){
+  var round=S.round, T=DATA.talks[round];
+  var ev=[];
+  T.dm.forEach(function(t){ ev.push({dm:1, text:t}); });
+  npcs().forEach(function(cid){
+    T[cid].forEach(function(line){ ev.push({who:cid, text:line}); });
+  });
+  DIS={ev:ev, idx:0, followed:false};
+  app.innerHTML='<div class="screen"><h2 class="center lampc">第'+["一","二","三"][round-1]+'幕 · 讨论</h2>'+
+   '<p class="center dim small">五名角色将轮流发言。全部发言后，你可以选择1条追问。</p>'+
+   '<div id="talks"></div><div id="talkctl"></div></div>';
+  showNextTalk();
+}
+function showNextTalk(){
+  var box=document.getElementById("talks"), ctl=document.getElementById("talkctl");
+  if(DIS.idx<DIS.ev.length){
+    var e=DIS.ev[DIS.idx++], d=document.createElement("div");
+    if(e.dm){ d.className="say dm-say"; d.innerHTML='<span class="dm-tag">DM</span><p style="margin:4px 0 0">'+esc(e.text)+'</p>'; }
+    else { var c=DATA.chars[e.who]; d.className="say";
+      d.innerHTML='<div class="who">'+c.name+'<span class="wrole">'+c.role+'</span></div><div>'+esc(e.text)+'</div>';
+      if(AC.on) AC.sfx.page(); }
+    box.appendChild(d);
+    ctl.innerHTML='<button class="btn ghost" onclick="showNextTalk()">▼ 继续（还剩 '+(DIS.ev.length-DIS.idx)+' 条发言）</button>';
+    d.scrollIntoView({behavior:"smooth", block:"end"});
+  } else if(!DIS.followed){
+    var fu=DATA.followups[S.round][S.player];
+    var h='<div class="narr"><span class="dm-tag">你的追问 · 三选一</span>';
+    fu.forEach(function(f,i){ h+='<button class="opt-btn" onclick="doFollow('+i+')">'+esc(f.q)+'</button>'; });
+    h+='<button class="opt-btn dim" onclick="endDiscuss()">不追问了，静观其变 →</button></div>';
+    ctl.innerHTML=h;
+  }
+}
+function doFollow(i){
+  var f=DATA.followups[S.round][S.player][i], c=DATA.chars[f.who];
+  var box=document.getElementById("talks");
+  var q=document.createElement("div"); q.className="say me";
+  q.innerHTML='<div class="who">你 · '+me().name+'</div><div>'+esc(f.q)+'</div>'; box.appendChild(q);
+  var a=document.createElement("div"); a.className="say";
+  a.innerHTML='<div class="who">'+c.name+'<span class="wrole">'+c.role+'</span></div><div>'+esc(f.a)+'</div>'; box.appendChild(a);
+  DIS.followed=true;
+  document.getElementById("talkctl").innerHTML='<button class="btn" onclick="endDiscuss()">结束本轮讨论 →</button>';
+  a.scrollIntoView({behavior:"smooth", block:"end"});
+}
+function endDiscuss(){
+  if(S.round<3){ S.round++; go("actdm"); }
+  else go("vote");
+}
+
+/* ---------- 7. 雪夜送信 ---------- */
+function rLetterInput(app){
+  app.innerHTML='<div class="screen"><h2 class="center lampc">雪 夜 送 信</h2>'+
+   '<p class="center dim small">写给接应部队的一句话，不超过15字。可真，可假。<br>DM只公示送信人数，不公示内容——你的话，会被谁听见？</p>'+
+   '<textarea id="letter" maxlength="15" placeholder="写下你的密信……"></textarea>'+
+   '<div class="counter"><span id="lc">0</span> / 15</div>'+
+   '<button class="btn" onclick="sendLetter()">🕊 折好纸条，交给DM送出</button></div>';
+  var ta=document.getElementById("letter");
+  ta.addEventListener("input",function(){ document.getElementById("lc").textContent=ta.value.length; });
+  ta.focus();
+}
+function sendLetter(){
+  var v=document.getElementById("letter").value.trim();
+  if(!v){ alert("纸条不能是空白。接应部队在等一句话。"); return; }
+  S.letter=v; S.letterDone=true; save();
+  var hint="";
+  if(letterEagle()) hint="送信的哨兵消失在雪里。你望着鹰嘴崖的方向——但愿，来得及。";
+  else if(letterFake()) hint="纸条送出去了。「平安」二字落进雪夜，你不知道它会换来什么。";
+  else if(letterKey()) hint="纸条送出去了。你把最要紧的几个字，压进了最不起眼的句子里。";
+  else hint="纸条送出去了。雪夜里，六封密信奔向同一个方向，各自怀着不同的心。";
+  var app=document.getElementById("app");
+  app.innerHTML='<div class="screen"><div class="narr"><span class="dm-tag">密信已送出</span>'+
+   '<p>你的密信：<b class="lampc">「'+esc(S.letter)+'」</b></p><p class="mono">'+esc(hint)+'</p>'+
+   '<p class="dim small">DM收齐六张纸条，当众投入火盆边的信袋：「今夜送出密信，共六封。」其他五封信的内容，无人知晓。</p></div>'+
+   '<button class="btn" onclick="go(\'discuss\')">回到油灯下，继续讨论 →</button></div>';
+}
+
+/* ---------- 8. 终局指认 ---------- */
+function rVote(app){
+  var h='<div class="screen"><h2 class="center lampc">终 局 指 认</h2>'+
+   '<p class="center dim small">天亮了。接应部队的马蹄声已到驿站外。三个问题，想清楚了再答。</p>'+
+   '<p class="center"><button class="btn ghost" style="width:auto;display:inline-block;padding:8px 16px" onclick="UI.hints()">💡 翻看关键线索</button></p>';
+  h+='<div class="vote-q"><div class="qt">问题一 · 谁是凶手（黄雀）？</div>';
+  ORDER.forEach(function(cid){ var c=DATA.chars[cid];
+    h+='<button class="opt-btn" data-q="q1" data-v="'+cid+'" onclick="vote(this)">'+c.name+'<span class="badge">'+c.role+'</span></button>'; });
+  h+='</div>';
+  h+='<div class="vote-q"><div class="qt">问题二 · 电文在哪？</div>';
+  [["wax","蜡纸筒标语背面"],["box","铁匣（仍在驿站）"],["well","水井铁盒"],["case","沈青梧的皮箱"],["gone","已被销毁"]]
+   .forEach(function(o){ h+='<button class="opt-btn" data-q="q2" data-v="'+o[0]+'" onclick="vote(this)">'+o[1]+'</button>'; });
+  h+='</div>';
+  h+='<div class="vote-q"><div class="qt">问题三 · 老周真正的死因？</div>';
+  [["shot","近距离枪杀"],["poisoned","被人下毒，死后补枪"],["self","自己服毒，石敢当含泪补枪伪造现场"],["acc","服毒后意外身亡"]]
+   .forEach(function(o){ h+='<button class="opt-btn" data-q="q3" data-v="'+o[0]+'" onclick="vote(this)">'+o[1]+'</button>'; });
+  h+='</div>';
+  h+='<button class="btn" id="voteBtn" disabled onclick="submitVote()">提交指认 →</button></div>';
+  app.innerHTML=h;
+  ["q1","q2","q3"].forEach(function(q){
+    if(S.votes[q]){ var b=app.querySelector('[data-q="'+q+'"][data-v="'+S.votes[q]+'"]'); if(b) b.classList.add("sel"); }
+  });
+  checkVote();
+}
+function vote(btn){
+  var q=btn.getAttribute("data-q");
+  btn.parentNode.querySelectorAll(".opt-btn").forEach(function(b){ b.classList.remove("sel"); });
+  btn.classList.add("sel");
+  S.votes[q]=btn.getAttribute("data-v"); save(); checkVote();
+}
+function checkVote(){
+  var ok=S.votes.q1&&S.votes.q2&&S.votes.q3;
+  document.getElementById("voteBtn").disabled=!ok;
+}
+UI.hints=function(){
+  var keys=["B1","B2","B4","C4","C5"], h='<h3>💡 关键线索回顾</h3>';
+  var any=false;
+  keys.forEach(function(id){ if(hasClue(id)){ any=true;
+    h+='<div class="clue-mini"><b class="lampc">['+id+']</b> '+esc(DATA.clues[id].t)+'<br><span class="dim small">'+esc(DATA.clues[id].x)+'</span></div>'; }});
+  if(!any) h+='<p class="dim">关键线索尚未收集到。</p>';
+  h+='<button class="btn ghost" onclick="UI.close()">收起</button>';
+  this.open(h);
+};
+function submitVote(){
+  S.settle=computeSettle(); S.revealIdx=0; save(); go("reveal");
+}
+
+/* ---------- 9. 真相复盘（四层） ---------- */
+function rReveal(app){
+  var i=S.revealIdx, R=DATA.reveals[i], mc=DATA.chars[R.mono.who];
+  if(AC.on && i===1) setTimeout(function(){ AC.sfx.gun(); },700); // 第二层「枪」：低沉枪声
+  app.innerHTML='<div class="screen"><div class="reveal-title">'+esc(R.title)+'</div>'+
+   '<div class="reveal-sub">—— '+esc(R.sub)+' ——</div>'+
+   R.dm.map(function(t){return '<div class="narr"><p>'+esc(t)+'</p></div>';}).join("")+
+   '<div class="say"><div class="who">'+mc.name+' 的独白<span class="wrole">'+mc.role+'</span></div><div class="mono">'+esc(R.mono.text)+'</div></div>'+
+   '<button class="btn" onclick="nextReveal()">'+(i<3?'揭开下一层真相 →':'查看任务结算 →')+'</button></div>';
+}
+function nextReveal(){
+  if(S.revealIdx<3){ S.revealIdx++; save(); go("reveal"); }
+  else go("settle");
+}
+
+/* ---------- 10. 结算（按所选角色判定个人任务） ---------- */
+function computeSettle(){
+  var v=S.votes, p=S.player;
+  var killerOK = v.q1==="ma";
+  var selfOK = v.q3==="self";
+  var waxOK = v.q2==="wax";
+  var publicWin = killerOK && selfOK;
+  var t={};
+  if(p==="huoshan"){
+    t.hs1={done:killerOK&&waxOK, note:killerOK&&waxOK?"凶手伏法，电文完璧。":"凶手或电文，你漏了一项。"};
+    t.hs2={done:killerOK, note:killerOK?"你当众点出黄雀是马三爷——密电的交代，完成了。":"黄雀从你身边溜走了。"};
+    t.hs3={done:true, note:"从头到尾，你坐得很稳。没人看见你攥紧的左手。"};
+  }else if(p==="lin"){
+    t.ln1={done:killerOK, note:killerOK?"你指认了真凶。":"真凶未能伏法。"};
+    t.ln2={done:waxOK, note:waxOK?"名单就在你的蜡纸筒里——你终于读懂了那句速记。":"名单的下落，成了永远的谜。"};
+    t.ln3={done:waxOK||killerOK, note:"真相大白：蜡纸拓钥是老周本人所为，宣传队的声誉保住了。"};
+  }else if(p==="qin"){
+    t.qn1={done:selfOK, note:selfOK?"你查明了：毒是自己服的，枪是死后补的。":"老周真正的死因，你没有说对。"};
+    t.qn2={done:waxOK, note:waxOK?"蜡纸筒里的名单有你的单线记录——你的身份，有人能证明了。":"没有找到自证身份的东西，天亮后……但愿接应的人肯听你解释。"};
+    t.qn3={done:killerOK, note:killerOK?"偷马钱子碱的是马三爷——你的药箱清白了。":"偷药的人没能确定。"};
+  }else if(p==="shi"){
+    t.sg1={done:killerOK, note:killerOK?"信号是黄雀发的，黄雀就是马三爷。":"信号之谜没能完全解开。"};
+    t.sg2={done:true, note:"你守住了秘密到复盘。而遗书的背面写着：弟弟系假降，已归队。你可以哭了。"};
+    t.sg3={done:selfOK, note:selfOK?"掌印之谜解开——那是你自己抖得扶不稳的手。":"掌印的事，你始终没有声张。"};
+  }else if(p==="ma"){
+    t.ma1={done:!killerOK, note:!killerOK?"没有人指认你。你混过去了——但你一辈子都要带着这块补丁活。":"你被当众指认为黄雀。一切结束了。"};
+    t.ma2={done:letterEagle(), note:letterEagle()?"你把「鹰嘴崖」送了出去。十万人改道了。你弟弟……你对不起他，也对得起自己了。":"那句警告，你终究没有送出去。鹰嘴崖的雪，会记住这一夜。"};
+    t.ma3={done:!killerOK, note:!killerOK?"井边的事被当成了悬案。你的谎圆住了。":"铁盒、钉鞋、齿痕大洋——证据链把你钉死了。"};
+  }else if(p==="shen"){
+    t.sh1={done:waxOK||v.q2==="gone", note:waxOK?"正件找到了——蜡纸筒标语背面，从未落入敌手。":(v.q2==="gone"?"你判断电文已被销毁：只要不在黄雀手里，就算赢。其实它在蜡纸筒里，同样安全。":"电文的下落，你没能确认。")};
+    t.sh2={done:killerOK, note:killerOK?"你当众指认了黄雀：袖口补丁、齿痕大洋、钉鞋印——西北的地下网保住了。":"黄雀没有伏法，副件名单从此悬在刀尖上。"};
+    t.sh3={done:true, note:"采访本和皮箱夹层，都没有落到外人手里。"};
+  }
+  var tasks=me().tasks.map(function(x){ return {id:x.id, text:x.text, done:t[x.id].done, note:t[x.id].note}; });
+  var letterNote;
+  if(letterEagle()) letterNote="你的密信「"+S.letter+"」——接应部队收到警告：鹰嘴崖有埋伏，会师路线已改道。十万将士，绕开了绝地。";
+  else if(letterFake()) letterNote="你的密信「"+S.letter+"」被复盘记录为【假情报已送出】——这是黄雀最想看到的结果。";
+  else if(letterKey()) letterNote="你的密信「"+S.letter+"」——接应部队收到关键信息，名单中转有了着落。";
+  else letterNote="你的密信「"+S.letter+"」平安送达。它没有改变战局，但也没有带来灾祸。";
+  return {tasks:tasks, publicWin:publicWin, killerOK:killerOK, selfOK:selfOK, waxOK:waxOK, letterNote:letterNote};
+}
+function rSettle(app){
+  var z=S.settle;
+  var h='<div class="screen"><h2 class="center lampc">结 算</h2>';
+  h+='<div class="result-banner'+(z.publicWin?'':' bad')+'"><div class="dim small">公共目标</div>'+
+     '<div class="big '+(z.publicWin?'lampc':'red')+'">'+(z.publicWin?'公 共 胜 利':'公 共 失 利')+'</div>'+
+     '<div class="small dim">指认马三爷为真凶'+(z.killerOK?' ✓':' ✗')+' · 理解老周系自行服毒'+(z.selfOK?' ✓':' ✗')+'</div>'+
+     '<div class="small dim">电文下落：'+(z.waxOK?'答对了——蜡纸筒标语背面 ✓':'未能答出「蜡纸筒标语背面」 ✗')+'</div></div>';
+  h+='<h3 class="lampc">你的个人任务 · '+me().name+'</h3>';
+  z.tasks.forEach(function(t){
+    h+='<div class="task-item"><span class="tick">'+(t.done?'✅':'❌')+'</span><b>'+esc(t.text)+'</b><br><span class="dim small">'+esc(t.note)+'</span></div>';
+  });
+  h+='<div class="narr"><span class="dm-tag">雪夜送信 · 复盘</span><p>'+esc(z.letterNote)+'</p></div>';
+  h+='<button class="btn" onclick="go(\'egg\')">雪，快停了 →</button></div>';
+  app.innerHTML=h;
+}
+
+/* ---------- 11. 红色彩蛋 ---------- */
+function rEgg(app){
+  hud(false);
+  AC.setMood("bright"); // 彩蛋页切换为明亮 BGM 变体
+  var lamps=""; for(var i=0;i<7;i++) lamps+='<div class="egg-lamp" id="el'+i+'"></div>';
+  app.innerHTML='<div class="screen"><h2 class="center lampc" style="letter-spacing:.4em">尾 声</h2>'+
+   '<div id="egg-lamps">'+lamps+'</div><div id="eggtext" style="max-width:520px;margin:0 auto">'+
+   DATA.egg.lines.map(function(t,i){return '<p class="egg-line" id="eg'+i+'">'+esc(t)+'</p>';}).join("")+
+   '<p class="egg-line egg-final" id="egf">'+esc(DATA.egg.final)+'</p></div>'+
+   '<div id="eggbtn" class="center" style="margin-top:30px;opacity:0;transition:opacity 1.5s">'+
+   '<button class="btn" onclick="clearSave();S=fresh();go(\'title\')">再入一夜风雪（重新开始）</button></div></div>';
+  var i;
+  for(i=0;i<7;i++){ (function(k){ setTimeout(function(){ var e=document.getElementById("el"+k); if(e){ e.classList.add("lit"); if(AC.on) AC.sfx.crackle(3); } }, 600+k*700); })(i); }
+  DATA.egg.lines.forEach(function(line,k){ setTimeout(function(){ var e=document.getElementById("eg"+k); if(e) e.classList.add("show"); }, 1200+k*1600); });
+  setTimeout(function(){ var e=document.getElementById("egf"); if(e) e.classList.add("show"); }, 1200+DATA.egg.lines.length*1600);
+  setTimeout(function(){ var e=document.getElementById("eggbtn"); if(e) e.style.opacity=1; }, 2000+DATA.egg.lines.length*1600);
+  clearSave();
+}
+
+/* ---------- 启动 ---------- */
+S=fresh();
+if(hasSave()){ /* 标题页会出现「继续」按钮 */ }
+render();
+</script>
+</body>
+</html>
