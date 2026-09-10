@@ -200,8 +200,9 @@ svg text{fill:var(--paper); font-family:inherit;}
   background:#333; transition:all 1.6s ease;}
 .egg-lamp.lit{background:radial-gradient(circle at 50% 70%, #fff3c4, var(--lamp) 55%, #d07a1e);
   box-shadow:0 0 26px 8px rgba(240,184,78,.4);}
-.egg-line{opacity:0; transition:opacity 2s ease; margin:1.1em 0; text-align:center;}
-.egg-line.show{opacity:1;}
+.egg-line{opacity:0; transform:translateY(8px); transition:opacity 2.4s ease, transform 2.4s ease;
+  margin:1.1em 0; text-align:center;}
+.egg-line.show{opacity:1; transform:none;}
 .egg-final{font-size:1.4em; color:var(--lamp-hi); letter-spacing:.2em;
   text-shadow:0 0 20px rgba(240,184,78,.5);}
 
@@ -1699,23 +1700,43 @@ function rSettle(app){
   app.innerHTML=h;
 }
 
-/* ---------- 11. 红色彩蛋 ---------- */
+/* ---------- 11. 红色彩蛋（四拍节奏：灯亮 → 静 → 文字浮现 → 结语定格） ---------- */
+var EGG={timers:[], done:false};
+function eggLater(fn,ms){ EGG.timers.push(setTimeout(fn,ms)); }
+function eggSkip(){ // 点击画面跳过等待：清掉排队定时器，灯全亮、文字与按钮直接就位
+  if(EGG.done) return; EGG.done=true;
+  EGG.timers.forEach(function(t){ clearTimeout(t); }); EGG.timers=[];
+  if(typeof Finale!=="undefined" && !Finale.active){ try{ Finale.crossfade(); }catch(e){} } // 跳过时补响尾声曲
+  for(var k=0;k<7;k++){ var e=document.getElementById("el"+k); if(e) e.classList.add("lit"); }
+  DATA.egg.lines.forEach(function(_,k){ var e=document.getElementById("eg"+k); if(e) e.classList.add("show"); });
+  var f=document.getElementById("egf"); if(f) f.classList.add("show");
+  var b=document.getElementById("eggbtn"); if(b){ b.style.opacity=1; b.style.pointerEvents="auto"; }
+  var tip=document.getElementById("eggtip"); if(tip) tip.style.display="none";
+}
 function rEgg(app){
   hud(false);
   AC.setMood("bright"); // 彩蛋页切换为明亮 BGM 变体
-  setTimeout(function(){ Finale.crossfade(); },600); // 与第一盏灯同步：mp3 淡入、合成BGM 渐弱（X 型 crossfade）
+  EGG.timers=[]; EGG.done=false; // 重进彩蛋可再次完整播放
+  eggLater(function(){ Finale.crossfade(); },600); // 与第一盏灯同步：mp3 淡入、合成BGM 渐弱（X 型 crossfade）
   var lamps=""; for(var i=0;i<7;i++) lamps+='<div class="egg-lamp" id="el'+i+'"></div>';
-  app.innerHTML='<div class="screen"><h2 class="center lampc" style="letter-spacing:.4em">尾 声</h2>'+
+  app.innerHTML='<div class="screen" onclick="eggSkip()"><h2 class="center lampc" style="letter-spacing:.4em">尾 声</h2>'+
    '<div id="egg-lamps">'+lamps+'</div><div id="eggtext" style="max-width:520px;margin:0 auto">'+
    DATA.egg.lines.map(function(t,i){return '<p class="egg-line" id="eg'+i+'">'+esc(t)+'</p>';}).join("")+
    '<p class="egg-line egg-final" id="egf">'+esc(DATA.egg.final)+'</p></div>'+
-   '<div id="eggbtn" class="center" style="margin-top:30px;opacity:0;transition:opacity 1.5s">'+
-   '<button class="btn" onclick="Finale.stop();clearSave();S=fresh();go(\'title\')">再入一夜风雪（重新开始）</button></div></div>';
+   '<div id="eggbtn" class="center" style="margin-top:30px;opacity:0;pointer-events:none;transition:opacity 1.5s">'+
+   '<button class="btn" onclick="Finale.stop();clearSave();S=fresh();go(\'title\')">再入一夜风雪（重新开始）</button></div>'+
+   '<div class="skiptip" id="eggtip">点击画面可跳过等待</div></div>';
   var i;
-  for(i=0;i<7;i++){ (function(k){ setTimeout(function(){ var e=document.getElementById("el"+k); if(e){ e.classList.add("lit"); if(AC.on) AC.sfx.crackle(3); } }, 600+k*700); })(i); }
-  DATA.egg.lines.forEach(function(line,k){ setTimeout(function(){ var e=document.getElementById("eg"+k); if(e) e.classList.add("show"); }, 1200+k*1600); });
-  setTimeout(function(){ var e=document.getElementById("egf"); if(e) e.classList.add("show"); }, 1200+DATA.egg.lines.length*1600);
-  setTimeout(function(){ var e=document.getElementById("eggbtn"); if(e) e.style.opacity=1; }, 2000+DATA.egg.lines.length*1600);
+  /* 第一拍·点灯：600ms 起每 700ms 一盏（保留 crackle），4800ms 全部亮起，此阶段无任何正文 */
+  for(i=0;i<7;i++){ (function(k){ eggLater(function(){ var e=document.getElementById("el"+k); if(e){ e.classList.add("lit"); if(AC.on) AC.sfx.crackle(3); } }, 600+k*700); })(i); }
+  /* 第二拍·留白：全亮后静 1.8s，只听 BGM */
+  var T0=4800+1800; // 6600ms 起文字开始浮现
+  /* 第三拍·历史段落缓缓浮现：每条间隔 1.4s，CSS 2.4s 淡入+8px 上移 */
+  DATA.egg.lines.forEach(function(line,k){ eggLater(function(){ var e=document.getElementById("eg"+k); if(e) e.classList.add("show"); }, T0+k*1400); });
+  /* 第四拍·结语单独再延迟 2s 浮现并定格，结语落定后按钮才淡入 */
+  var tFinal=T0+(DATA.egg.lines.length-1)*1400+2000; // 15600ms
+  eggLater(function(){ var e=document.getElementById("egf"); if(e) e.classList.add("show"); }, tFinal);
+  eggLater(function(){ var e=document.getElementById("eggbtn"); if(e){ e.style.opacity=1; e.style.pointerEvents="auto"; } var t2=document.getElementById("eggtip"); if(t2) t2.style.display="none"; EGG.done=true; }, tFinal+2600);
   clearSave();
 }
 
